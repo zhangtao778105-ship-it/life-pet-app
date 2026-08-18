@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>治愈小铺</title>
+  <title>小爱</title>
   <!-- iOS PWA 体验专项支持 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="治愈小铺">
+  <meta name="apple-mobile-web-app-title" content="小爱">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <!-- PWA Manifest -->
   <link rel="manifest" href="./manifest.json">
@@ -18,7 +18,7 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Chart.js (用于高颜值饼状图) -->
+  <!-- Chart.js (用于24小时分时条形图) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -36,10 +36,11 @@
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
-            study: { light: '#EDE9FE', DEFAULT: '#8B5CF6', dark: '#6D28D9' },
-            life: { light: '#FEF3C7', DEFAULT: '#F59E0B', dark: '#D97706' },
-            health: { light: '#D1FAE5', DEFAULT: '#10B981', dark: '#047857' },
-            beauty: { light: '#FCE7F3', DEFAULT: '#EC4899', dark: '#BE185D' },
+            study: { light: '#EDE9FE', DEFAULT: '#8B5CF6', dark: '#6D28D9' }, // 学习 紫
+            life: { light: '#FEF3C7', DEFAULT: '#F59E0B', dark: '#D97706' },   // 生活 橙
+            health: { light: '#D1FAE5', DEFAULT: '#10B981', dark: '#047857' }, // 健康 绿
+            money: { light: '#DCFCE7', DEFAULT: '#16A34A', dark: '#15803D' },  // 赚钱 翡翠绿/金
+            beauty: { light: '#FCE7F3', DEFAULT: '#EC4899', dark: '#BE185D' }, // 美容 粉
             fridge: { light: '#E0F2FE', DEFAULT: '#0284C7', dark: '#0369A1' },
             bgcream: '#FAF8F5',
             cardbg: '#FFFFFF'
@@ -62,9 +63,7 @@
       0%, 100% { transform: translateY(0px) rotate(0deg); }
       50% { transform: translateY(-5px) rotate(1.5deg); }
     }
-    .pet-idle {
-      animation: pet-idle 3.5s ease-in-out infinite;
-    }
+    .pet-idle { animation: pet-idle 3.5s ease-in-out infinite; }
 
     /* 6大肢体动作 */
     @keyframes wiggle-butt {
@@ -131,7 +130,7 @@
 <body class="min-h-screen flex flex-col antialiased selection:bg-purple-200 relative pb-28 sm:pb-12">
   <div id="app" class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 flex flex-col gap-6">
 
-    <!-- Top Navigation Header -->
+    <!-- Top Navigation Header (分两行展示日期与金句) -->
     <header class="flex items-center justify-between bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100/80">
       <div class="flex items-center gap-3.5">
         <div @click="currentView = 'home'" class="w-12 h-12 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center border border-purple-100 shadow-sm cursor-pointer active:scale-95 transition" title="返回主页">
@@ -140,15 +139,17 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 bg-clip-text text-transparent">
-              治愈小铺
+              小爱
             </h1>
             <span v-if="currentView !== 'home'" class="text-xs font-black px-2.5 py-1 rounded-xl bg-purple-100 text-purple-700">
               {{ currentViewTitle }}
             </span>
           </div>
-          <p class="text-xs sm:text-sm text-gray-400 font-medium">
-            {{ currentDateStr }} · 每一个自律的小瞬间，都会让生活更可爱 🌸
-          </p>
+          <!-- 明确分两行 -->
+          <div class="flex flex-col gap-0.5 mt-0.5">
+            <span class="text-xs text-gray-500 font-bold font-mono">{{ currentDateStr }}</span>
+            <span class="text-xs text-gray-400 font-medium">每一个自律的小瞬间，都会让生活更可爱 🌸</span>
+          </div>
         </div>
       </div>
 
@@ -170,33 +171,40 @@
       </div>
     </header>
 
-    <!-- ================= 🏠 主页面: 高颜值九宫格模块入口 (Home Hub View) ================= -->
+    <!-- ================= 🏠 主页面: 功能方块入口矩阵 + 24小时分时时间轴柱状图 ================= -->
     <main v-if="currentView === 'home'" class="flex flex-col gap-6 animate-fade-in">
 
-      <!-- 顶部萌宠陪伴大卡片 -->
-      <div @click="triggerPetAction" class="bg-gradient-to-br from-purple-50 via-pink-50 to-amber-50 rounded-3xl p-6 sm:p-8 shadow-sm border border-purple-100/80 relative overflow-hidden cursor-pointer group select-none transition hover:shadow-md">
+      <!-- 顶部小狗陪伴看板 (支持微信状态式心情选择) -->
+      <div class="bg-gradient-to-br from-purple-50 via-pink-50 to-amber-50 rounded-3xl p-6 sm:p-8 shadow-sm border border-purple-100/80 relative overflow-hidden">
         <div class="flex flex-col sm:flex-row items-center gap-6">
-          <div class="w-28 h-28 bg-white rounded-3xl p-2 shadow-md flex items-center justify-center shrink-0 border border-white relative overflow-hidden">
+          <div @click="triggerPetAction" class="w-28 h-28 bg-white rounded-3xl p-2 shadow-md flex items-center justify-center shrink-0 border border-white relative overflow-hidden cursor-pointer group active:scale-95 transition">
             <img :src="currentPetImg" alt="Pet Mascot" class="w-full h-full object-contain" :class="petAnimClass">
             <div v-if="actionBadgeText" class="absolute bottom-1 px-2 py-0.5 rounded-full bg-purple-600 text-[9px] font-black text-white shadow animate-bounce">
               {{ actionBadgeText }}
             </div>
           </div>
           <div class="flex-1 text-center sm:text-left">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-black bg-white text-purple-700 mb-2 shadow-sm border border-purple-100">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span>{{ petMood }}</span>
-              <span class="text-gray-400 font-normal">· 点击互动 🐾</span>
+
+            <!-- 微信状态式心情选择器 -->
+            <div class="flex items-center justify-center sm:justify-start gap-2 mb-2">
+              <button @click="showStatusPicker = true" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-extrabold bg-white text-purple-700 shadow-sm border border-purple-100 hover:border-purple-300 transition active:scale-95" title="点击切换当前微信状态">
+                <span>{{ userStatus.icon }}</span>
+                <span>{{ userStatus.name }}</span>
+                <span class="text-[10px] text-gray-400 font-normal">▼ 设状态</span>
+              </button>
+              <span class="text-xs text-gray-400 font-medium">| 小狗正专心陪着你 🐾</span>
             </div>
+
             <h2 class="text-lg sm:text-xl font-black text-gray-800 leading-snug">
               "{{ petQuote }}"
             </h2>
+
             <!-- 今日总打卡进度 -->
             <div class="mt-4 flex items-center gap-3">
               <div class="flex-1 bg-white rounded-full h-3 overflow-hidden p-0.5 border border-purple-100 shadow-inner">
                 <div class="bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 h-full rounded-full transition-all duration-700" :style="{ width: todayProgressPercent + '%' }"></div>
               </div>
-              <span class="text-xs font-black text-purple-700 font-mono shrink-0">今日进度 {{ todayProgressPercent }}%</span>
+              <span class="text-xs font-black text-purple-700 font-mono shrink-0">今日综合达成 {{ todayProgressPercent }}%</span>
             </div>
           </div>
         </div>
@@ -225,7 +233,7 @@
           </div>
         </div>
 
-        <!-- 2. 🎯 生活 SOP 智能打卡板块 -->
+        <!-- 2. 🎯 生活 SOP & 早中晚 TODO 板块 -->
         <div @click="openView('sop')" class="p-6 rounded-3xl bg-white border-2 border-pink-100 hover:border-pink-300 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between gap-4 group active:scale-[0.98]">
           <div class="flex items-start justify-between">
             <div class="w-12 h-12 rounded-2xl bg-beauty-light text-beauty flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">
@@ -236,16 +244,16 @@
             </span>
           </div>
           <div>
-            <h3 class="font-black text-lg text-gray-800 group-hover:text-pink-600 transition">生活 SOP 周期打卡</h3>
-            <p class="text-xs text-gray-400 mt-1 font-medium">背单词、隔天面膜、锻炼、练字、宝宝护理</p>
+            <h3 class="font-black text-lg text-gray-800 group-hover:text-pink-600 transition">生活 SOP & 早中晚 TODO</h3>
+            <p class="text-xs text-gray-400 mt-1 font-medium">早中晚事项规划、起止时间记录与周期打卡</p>
           </div>
           <div class="flex items-center text-xs font-bold text-pink-600 gap-1 pt-2 border-t border-gray-100">
-            <span>查看打卡清单</span>
+            <span>查看 SOP & TODO</span>
             <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
           </div>
         </div>
 
-        <!-- 3. 🧊 冰箱存货与保鲜管理 (新板块!) -->
+        <!-- 3. 🧊 冰箱存货与保鲜管理 -->
         <div @click="openView('fridge')" class="p-6 rounded-3xl bg-white border-2 border-sky-100 hover:border-sky-300 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between gap-4 group active:scale-[0.98]">
           <div class="flex items-start justify-between">
             <div class="w-12 h-12 rounded-2xl bg-fridge-light text-fridge flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">
@@ -327,20 +335,28 @@
 
       </div>
 
-      <!-- 底部四大维度饼状图概览小条 -->
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div class="flex items-center gap-3">
-          <span class="p-3 bg-purple-50 text-purple-600 rounded-2xl"><i data-lucide="pie-chart" class="w-5 h-5"></i></span>
+      <!-- 📊 24小时多维活动时间轴条形图 (类似手机屏幕使用时间分时柱状图) -->
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h4 class="font-black text-sm text-gray-800">今日四维能量状态</h4>
-            <p class="text-xs text-gray-400 mt-0.5">学习 {{ pieStats.study }}% · 健康 {{ pieStats.health }}% · 变美 {{ pieStats.beauty }}% · 生活 {{ pieStats.life }}%</p>
+            <h3 class="font-black text-gray-800 text-base flex items-center gap-2">
+              <i data-lucide="bar-chart-2" class="w-5 h-5 text-purple-600"></i> 一天 24 小时活动分时时间轴
+            </h3>
+            <p class="text-xs text-gray-400 mt-0.5">记录每天每个小时在做哪类事项（自动关联专注计时与 TODO 起止时间）</p>
+          </div>
+          <!-- 五大维度图例 -->
+          <div class="flex flex-wrap items-center gap-3 text-xs font-bold">
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-study"></span> 学习</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-life"></span> 生活</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-health"></span> 健康</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-money"></span> 赚钱</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-beauty"></span> 美容</span>
           </div>
         </div>
-        <div class="w-full sm:w-64 h-3 bg-gray-100 rounded-full overflow-hidden flex shadow-inner">
-          <div class="bg-study h-full" :style="{ width: pieStats.study + '%' }"></div>
-          <div class="bg-health h-full" :style="{ width: pieStats.health + '%' }"></div>
-          <div class="bg-beauty h-full" :style="{ width: pieStats.beauty + '%' }"></div>
-          <div class="bg-life h-full" :style="{ width: pieStats.life + '%' }"></div>
+
+        <!-- 24小时柱状图画板 -->
+        <div class="relative w-full h-56">
+          <canvas id="hourlyBarChart"></canvas>
         </div>
       </div>
     </main>
@@ -357,7 +373,6 @@
           </span>
         </div>
 
-        <!-- 计时大胶囊卡片 -->
         <div class="py-10 px-4 rounded-3xl bg-gradient-to-br from-purple-50/60 via-white to-pink-50/40 border-2 border-purple-100 flex flex-col items-center justify-center"
              :class="{ 'timer-running-box border-purple-300': timerRunning }">
           <span class="text-xs font-extrabold uppercase tracking-widest text-purple-500 mb-2">
@@ -371,7 +386,6 @@
           </p>
         </div>
 
-        <!-- 控制按钮 -->
         <div class="grid grid-cols-3 gap-3 w-full">
           <button v-if="!timerRunning" @click="startTimer" class="col-span-2 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-purple-200 hover:from-purple-700 hover:to-indigo-700 transition flex items-center justify-center gap-2 active:scale-95">
             <i data-lucide="play" class="w-5 h-5 fill-white"></i> 开始专注
@@ -386,22 +400,121 @@
       </div>
     </main>
 
-    <!-- ================= 独立板块 2: 🎯 生活 SOP 打卡页面 (SOP View) ================= -->
+    <!-- ================= 独立板块 2: 🎯 生活 SOP & 早中晚 TODO 清单页面 (SOP View) ================= -->
     <main v-if="currentView === 'sop'" class="max-w-4xl mx-auto w-full flex flex-col gap-6 animate-fade-in">
+
+      <!-- 1. 早中晚自主设计 TODO LIST (分早中晚+五维度色彩+起止时间记录) -->
       <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col gap-5">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xl font-black text-gray-800">生活 SOP 智能周期清单</h2>
-            <p class="text-xs text-gray-400 mt-0.5">自律不是束缚，而是为了更从容的生活</p>
+            <h2 class="text-xl font-black text-gray-800 flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-indigo-500"></span> 早中晚 自主设计 TO DO LIST
+            </h2>
+            <p class="text-xs text-gray-400 mt-0.5">完成时输入起止时间，自动同步沉淀到 24 小时活动时间轴</p>
           </div>
-          <button @click="showAddSopModal = true" class="px-4 py-2 bg-purple-600 text-white font-black text-xs rounded-2xl hover:bg-purple-700 active:scale-95 shadow-md shadow-purple-200 flex items-center gap-1">
-            + 新增 SOP 项
+          <button @click="showAddTodoModal = true" class="px-4 py-2 bg-indigo-600 text-white font-black text-xs rounded-2xl hover:bg-indigo-700 active:scale-95 shadow-md shadow-indigo-200 flex items-center gap-1">
+            + 添加 TODO
           </button>
         </div>
 
-        <!-- 任务列表 -->
+        <!-- 早中晚三栏网格 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+          <!-- 🌅 早晨 Morning -->
+          <div class="p-4 rounded-3xl bg-amber-50/40 border border-amber-100 flex flex-col gap-3">
+            <div class="flex items-center justify-between pb-2 border-b border-amber-200/60 font-black text-sm text-amber-800">
+              <span class="flex items-center gap-1.5">🌅 早晨 (Morning)</span>
+              <span class="text-xs text-amber-600 font-mono">{{ getTodoList('morning').filter(x=>x.done).length }}/{{ getTodoList('morning').length }}</span>
+            </div>
+            <div class="flex flex-col gap-2.5 min-h-28">
+              <div v-if="getTodoList('morning').length === 0" class="text-center py-6 text-xs text-gray-400">暂无事项</div>
+              <div v-for="todo in getTodoList('morning')" :key="todo.id" class="p-3 rounded-2xl bg-white border shadow-sm flex flex-col gap-1.5 group transition" :class="todo.done ? 'border-emerald-200 bg-emerald-50/20' : 'border-gray-100'">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex items-start gap-2">
+                    <button @click="openCompleteTodoModal(todo)" class="mt-0.5 w-5 h-5 rounded-lg flex items-center justify-center text-xs shrink-0 transition" :class="todo.done ? 'bg-emerald-500 text-white' : 'border border-gray-300 bg-gray-50 text-transparent'">✓</button>
+                    <div>
+                      <span class="text-xs font-black text-gray-800 leading-snug" :class="{ 'line-through text-gray-400': todo.done }">{{ todo.text }}</span>
+                      <span class="text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 inline-block" :class="getDimensionBadgeClass(todo.dimension)">{{ todo.dimension }}</span>
+                    </div>
+                  </div>
+                  <button @click="deleteTodo(todo.id)" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                </div>
+                <div v-if="todo.startTime && todo.endTime" class="text-[10px] text-gray-400 font-mono pl-7">
+                  ⏰ {{ todo.startTime }} - {{ todo.endTime }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ☀️ 中午/下午 Afternoon -->
+          <div class="p-4 rounded-3xl bg-purple-50/40 border border-purple-100 flex flex-col gap-3">
+            <div class="flex items-center justify-between pb-2 border-b border-purple-200/60 font-black text-sm text-purple-800">
+              <span class="flex items-center gap-1.5">☀️ 午后 (Afternoon)</span>
+              <span class="text-xs text-purple-600 font-mono">{{ getTodoList('afternoon').filter(x=>x.done).length }}/{{ getTodoList('afternoon').length }}</span>
+            </div>
+            <div class="flex flex-col gap-2.5 min-h-28">
+              <div v-if="getTodoList('afternoon').length === 0" class="text-center py-6 text-xs text-gray-400">暂无事项</div>
+              <div v-for="todo in getTodoList('afternoon')" :key="todo.id" class="p-3 rounded-2xl bg-white border shadow-sm flex flex-col gap-1.5 group transition" :class="todo.done ? 'border-emerald-200 bg-emerald-50/20' : 'border-gray-100'">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex items-start gap-2">
+                    <button @click="openCompleteTodoModal(todo)" class="mt-0.5 w-5 h-5 rounded-lg flex items-center justify-center text-xs shrink-0 transition" :class="todo.done ? 'bg-emerald-500 text-white' : 'border border-gray-300 bg-gray-50 text-transparent'">✓</button>
+                    <div>
+                      <span class="text-xs font-black text-gray-800 leading-snug" :class="{ 'line-through text-gray-400': todo.done }">{{ todo.text }}</span>
+                      <span class="text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 inline-block" :class="getDimensionBadgeClass(todo.dimension)">{{ todo.dimension }}</span>
+                    </div>
+                  </div>
+                  <button @click="deleteTodo(todo.id)" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                </div>
+                <div v-if="todo.startTime && todo.endTime" class="text-[10px] text-gray-400 font-mono pl-7">
+                  ⏰ {{ todo.startTime }} - {{ todo.endTime }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🌙 晚上 Evening -->
+          <div class="p-4 rounded-3xl bg-indigo-50/40 border border-indigo-100 flex flex-col gap-3">
+            <div class="flex items-center justify-between pb-2 border-b border-indigo-200/60 font-black text-sm text-indigo-800">
+              <span class="flex items-center gap-1.5">🌙 晚间 (Evening)</span>
+              <span class="text-xs text-indigo-600 font-mono">{{ getTodoList('evening').filter(x=>x.done).length }}/{{ getTodoList('evening').length }}</span>
+            </div>
+            <div class="flex flex-col gap-2.5 min-h-28">
+              <div v-if="getTodoList('evening').length === 0" class="text-center py-6 text-xs text-gray-400">暂无事项</div>
+              <div v-for="todo in getTodoList('evening')" :key="todo.id" class="p-3 rounded-2xl bg-white border shadow-sm flex flex-col gap-1.5 group transition" :class="todo.done ? 'border-emerald-200 bg-emerald-50/20' : 'border-gray-100'">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex items-start gap-2">
+                    <button @click="openCompleteTodoModal(todo)" class="mt-0.5 w-5 h-5 rounded-lg flex items-center justify-center text-xs shrink-0 transition" :class="todo.done ? 'bg-emerald-500 text-white' : 'border border-gray-300 bg-gray-50 text-transparent'">✓</button>
+                    <div>
+                      <span class="text-xs font-black text-gray-800 leading-snug" :class="{ 'line-through text-gray-400': todo.done }">{{ todo.text }}</span>
+                      <span class="text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 inline-block" :class="getDimensionBadgeClass(todo.dimension)">{{ todo.dimension }}</span>
+                    </div>
+                  </div>
+                  <button @click="deleteTodo(todo.id)" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                </div>
+                <div v-if="todo.startTime && todo.endTime" class="text-[10px] text-gray-400 font-mono pl-7">
+                  ⏰ {{ todo.startTime }} - {{ todo.endTime }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 2. 原有周期 SOP 清单 (背词/面膜/锻炼/周项/长周期) -->
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col gap-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-black text-gray-800">原有周期习惯 SOP</h2>
+            <p class="text-xs text-gray-400 mt-0.5">长期固定好习惯打卡追踪</p>
+          </div>
+          <button @click="showAddSopModal = true" class="px-4 py-2 bg-purple-600 text-white font-black text-xs rounded-2xl hover:bg-purple-700 active:scale-95 shadow-md shadow-purple-200 flex items-center gap-1">
+            + 新增周期 SOP
+          </button>
+        </div>
+
         <div class="flex flex-col gap-3.5">
-          <!-- 1. 每天背10个单词 -->
+          <!-- 背单词 -->
           <div @click="toggleVocab" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm"
                :class="habits.vocab.doneToday ? 'bg-purple-50/80 border-purple-300' : 'bg-white border-gray-100 hover:border-purple-200'">
             <div class="flex items-center gap-3.5">
@@ -428,7 +541,7 @@
             </div>
           </div>
 
-          <!-- 2. 隔天敷面膜 -->
+          <!-- 隔天面膜 -->
           <div @click="checkInHabit('mask')" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm"
                :class="maskStatus.completedToday ? 'bg-pink-50/80 border-pink-300' : (maskStatus.dueToday ? 'bg-pink-50/40 border-pink-200' : 'bg-white border-gray-100')">
             <div class="flex items-center gap-3.5">
@@ -438,7 +551,7 @@
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-black px-2 py-0.5 rounded-md bg-beauty-light text-beauty-dark">变美 · 隔天</span>
+                  <span class="text-xs font-black px-2 py-0.5 rounded-md bg-beauty-light text-beauty-dark">美容 · 隔天</span>
                   <h4 class="font-black text-base text-gray-800">隔天敷面膜</h4>
                 </div>
                 <p class="text-xs mt-1 font-semibold" :class="maskStatus.dueToday && !maskStatus.completedToday ? 'text-pink-600' : 'text-gray-400'">
@@ -449,7 +562,7 @@
             <span v-if="maskStatus.dueToday && !maskStatus.completedToday" class="text-xs px-2.5 py-1 rounded-xl bg-pink-500 text-white font-black animate-pulse shadow-sm">今日需敷</span>
           </div>
 
-          <!-- 3. 一周锻炼4天 -->
+          <!-- 一周锻炼4天 -->
           <div @click="toggleWorkoutToday" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm"
                :class="habits.workout.doneToday ? 'bg-green-50/80 border-green-300' : 'bg-white border-gray-100'">
             <div class="flex items-center gap-3.5">
@@ -472,7 +585,7 @@
             <span class="text-xs font-bold text-gray-400">{{ habits.workout.doneToday ? '今日已打卡' : '点击打卡' }}</span>
           </div>
 
-          <!-- 4. 每周 SOP 集合 -->
+          <!-- 每周 SOP 集合 -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div v-for="item in weeklySopList" :key="item.id" @click="toggleWeeklySopItem(item.id)" class="p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm group"
                  :class="item.done ? 'bg-amber-50/90 border-amber-300' : 'bg-white border-gray-100 hover:border-amber-200'">
@@ -486,13 +599,11 @@
                   <span class="text-xs font-bold" :class="item.done ? 'text-amber-600' : 'text-gray-400'">{{ item.category }} · {{ item.done ? '已完成' : '待完成' }}</span>
                 </div>
               </div>
-              <button @click.stop="deleteWeeklySopItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1 shrink-0" title="删除该项">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
+              <button @click.stop="deleteWeeklySopItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1 shrink-0"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div>
           </div>
 
-          <!-- 5. 中长周期追踪 -->
+          <!-- 中长周期追踪 -->
           <div class="p-5 rounded-3xl bg-gray-50/90 border border-gray-100 flex flex-col gap-4">
             <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">中长期智能周期追踪</span>
             <div v-for="(item, idx) in intervalSopList" :key="item.id" class="flex items-center justify-between text-xs group" :class="{ 'border-t border-gray-200/60 pt-3': idx > 0 }">
@@ -501,20 +612,17 @@
                 <span class="text-gray-400 block text-xs mt-0.5">{{ getIntervalDesc(item) }}</span>
               </div>
               <div class="flex items-center gap-2 shrink-0">
-                <button @click="checkInIntervalItem(item.id)" class="px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 shadow-sm active:scale-95">
-                  刚刚完成
-                </button>
-                <button @click="deleteIntervalSopItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1" title="删除">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
+                <button @click="checkInIntervalItem(item.id)" class="px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 shadow-sm active:scale-95">刚刚完成</button>
+                <button @click="deleteIntervalSopItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
     </main>
 
-    <!-- ================= 独立板块 3: 🧊 冰箱存货与保鲜管理页面 (Fridge View - 新增!) ================= -->
+    <!-- ================= 独立板块 3: 🧊 冰箱存货与保鲜管理页面 (Fridge View) ================= -->
     <main v-if="currentView === 'fridge'" class="max-w-4xl mx-auto w-full flex flex-col gap-6 animate-fade-in">
       <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col gap-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -524,7 +632,6 @@
             </h2>
             <p class="text-xs text-gray-400 mt-0.5">随手记录冰箱生鲜余量，不做浪费食材的小糊涂 🥦</p>
           </div>
-          <!-- 分区筛选 (全部 / 冷藏室 / 冷冻室) -->
           <div class="flex rounded-2xl bg-gray-100 p-1 text-xs font-bold text-gray-600 self-start sm:self-auto">
             <button @click="fridgeTab = 'all'" class="px-3 py-1.5 rounded-xl transition" :class="fridgeTab === 'all' ? 'bg-white text-sky-700 shadow-sm' : 'hover:text-gray-900'">全部 ({{ fridgeList.length }})</button>
             <button @click="fridgeTab = 'chill'" class="px-3 py-1.5 rounded-xl transition" :class="fridgeTab === 'chill' ? 'bg-white text-sky-700 shadow-sm' : 'hover:text-gray-900'">🥬 冷藏保鲜</button>
@@ -532,7 +639,6 @@
           </div>
         </div>
 
-        <!-- 快捷新增食材输入栏 -->
         <div class="p-4 rounded-2xl bg-sky-50/50 border border-sky-100 flex flex-col sm:flex-row gap-2.5">
           <select v-model="newFood.zone" class="text-xs font-bold px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-700">
             <option value="chill">🥬 冷藏室</option>
@@ -540,13 +646,12 @@
           </select>
           <input v-model="newFood.name" type="text" placeholder="食材名称 (如: 西蓝花/牛排/鸡蛋)" class="flex-1 text-xs px-3.5 py-2.5 rounded-xl bg-white border border-gray-200">
           <input v-model="newFood.quantity" type="text" placeholder="数量 (如: 2颗/500g)" class="w-full sm:w-28 text-xs px-3 py-2.5 rounded-xl bg-white border border-gray-200">
-          <input v-model="newFood.expiry" type="date" class="text-xs px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-600" title="预计保质期/建议食用期">
+          <input v-model="newFood.expiry" type="date" class="text-xs px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-600">
           <button @click="addFoodItem" class="px-5 py-2.5 bg-sky-600 text-white font-black text-xs rounded-xl hover:bg-sky-700 active:scale-95 shadow-md shadow-sky-200">
             放入冰箱
           </button>
         </div>
 
-        <!-- 食材存货卡片网格 -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           <div v-if="filteredFridgeList.length === 0" class="col-span-full text-center py-12 text-xs text-gray-400">
             冰箱空空如也，快去采购好吃的放进来吧 🥗
@@ -560,12 +665,8 @@
                 </span>
                 <h4 class="font-black text-base text-gray-800 mt-1.5">{{ item.name }}</h4>
               </div>
-              <button @click="deleteFoodItem(item.id)" class="text-gray-300 hover:text-red-500 transition p-1" title="已经吃完/移出冰箱">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
+              <button @click="deleteFoodItem(item.id)" class="text-gray-300 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div>
-
-            <!-- 余量与保鲜期标签 -->
             <div class="flex items-center justify-between text-xs pt-2 border-t border-gray-200/50">
               <span class="font-bold text-gray-600 bg-white px-2 py-0.5 rounded-lg border border-gray-200/60">余量: {{ item.quantity || '充足' }}</span>
               <span v-if="item.expiry" class="text-[11px] font-semibold text-gray-400">至 {{ item.expiry }}</span>
@@ -583,7 +684,6 @@
             <h2 class="text-xl font-black text-gray-800">大事与产出成长档案</h2>
             <p class="text-xs text-gray-400 mt-0.5">记录每天的里程碑，沉淀属于你的每一步成长 🏆</p>
           </div>
-          <!-- 切换: 今日 / 周总结 / 月总结 -->
           <div class="flex rounded-2xl bg-gray-100 p-1 text-xs font-bold text-gray-600">
             <button @click="milestoneView = 'day'" class="px-3 py-1.5 rounded-xl transition" :class="milestoneView === 'day' ? 'bg-white text-purple-700 shadow-sm' : 'hover:text-gray-900'">今日记录</button>
             <button @click="milestoneView = 'week'" class="px-3 py-1.5 rounded-xl transition" :class="milestoneView === 'week' ? 'bg-white text-purple-700 shadow-sm' : 'hover:text-gray-900'">本周大事回顾</button>
@@ -591,13 +691,13 @@
           </div>
         </div>
 
-        <!-- 录入栏 (今日模式) -->
         <div v-if="milestoneView === 'day'" class="flex gap-2 p-3 bg-purple-50/40 rounded-2xl border border-purple-100">
           <select v-model="newMilestone.category" class="text-xs font-bold px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-700">
             <option value="学习">📚 学习</option>
             <option value="生活">☕ 生活</option>
             <option value="健康">🌿 健康</option>
-            <option value="变美">🌸 变美</option>
+            <option value="赚钱">💰 赚钱</option>
+            <option value="美容">🌸 美容</option>
           </select>
           <input v-model="newMilestone.text" @keyup.enter="addMilestone" type="text" placeholder="今天搞定了什么大事/产出了什么？" class="flex-1 text-xs px-3.5 py-2.5 rounded-xl bg-white border border-gray-200">
           <button @click="addMilestone" class="px-5 py-2.5 bg-purple-600 text-white font-black text-xs rounded-xl hover:bg-purple-700 active:scale-95 shadow-md shadow-purple-200">
@@ -605,20 +705,18 @@
           </button>
         </div>
 
-        <!-- 总结信息条 (周/月模式) -->
         <div v-else class="p-3.5 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-between text-xs text-purple-800 font-black">
           <span>{{ milestoneView === 'week' ? '📅 过去 7 天已完成大事盘点' : '🏆 本月全部产出与成长高光' }}</span>
           <span>共 {{ displayedMilestones.length }} 条记录</span>
         </div>
 
-        <!-- 列表 -->
         <div class="flex flex-col gap-3">
           <div v-if="displayedMilestones.length === 0" class="text-center py-12 text-xs text-gray-400">
             暂无大事记录，快去记录今天的成就吧 ✨
           </div>
           <div v-for="item in displayedMilestones" :key="item.id" class="p-4 rounded-2xl bg-gray-50/80 border border-gray-100 flex items-start justify-between gap-3 text-xs group">
             <div class="flex items-start gap-3">
-              <span class="px-2.5 py-1 rounded-lg font-extrabold text-[11px]" :class="getCategoryBadgeClass(item.category)">
+              <span class="px-2.5 py-1 rounded-lg font-extrabold text-[11px]" :class="getDimensionBadgeClass(item.category)">
                 {{ item.category }}
               </span>
               <div>
@@ -626,9 +724,7 @@
                 <span class="text-[11px] text-gray-400 font-mono mt-1 block">{{ item.date ? `${item.date} ` : '' }}{{ item.time }}</span>
               </div>
             </div>
-            <button @click="deleteMilestone(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1" title="删除">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
+            <button @click="deleteMilestone(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </div>
         </div>
       </div>
@@ -650,7 +746,6 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <!-- 左侧大月历 -->
           <div class="lg:col-span-7 bg-gray-50/80 p-5 rounded-3xl border border-gray-100 flex flex-col gap-3">
             <div class="flex items-center justify-between font-black text-base text-gray-800">
               <span>{{ calendarYear }} 年 {{ calendarMonth + 1 }} 月</span>
@@ -659,11 +754,9 @@
                 <button @click="changeMonth(1)" class="p-1.5 bg-white rounded-xl border border-gray-200 hover:bg-gray-100 text-xs">下月 ▶</button>
               </div>
             </div>
-            <!-- 星期头 -->
             <div class="grid grid-cols-7 gap-1 text-center font-black text-xs text-gray-400 py-1">
               <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
             </div>
-            <!-- 日期网格 -->
             <div class="grid grid-cols-7 gap-1.5 text-center font-mono text-sm">
               <div v-for="d in calendarDays" :key="d.key" class="py-2.5 rounded-xl transition flex flex-col items-center justify-center relative"
                    :class="d.isCurrentMonth ? (d.isToday ? 'bg-purple-600 text-white font-black shadow-md' : (d.hasEvent ? 'bg-rose-100 text-rose-700 font-black' : 'text-gray-700 hover:bg-gray-200/60')) : 'text-gray-300'">
@@ -673,7 +766,6 @@
             </div>
           </div>
 
-          <!-- 右侧纪念日倒数 -->
           <div class="lg:col-span-5 flex flex-col gap-3">
             <h3 class="font-black text-sm text-gray-700">重要日子倒数清单</h3>
             <div class="flex flex-col gap-2.5 max-h-80 overflow-y-auto pr-1">
@@ -690,9 +782,7 @@
                   <span class="text-xs font-black text-rose-500">
                     {{ getDaysUntil(evt.date) === 0 ? '🎉 就是今天!' : `还有 ${getDaysUntil(evt.date)} 天` }}
                   </span>
-                  <button @click="deleteSpecialEvent(evt.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                  </button>
+                  <button @click="deleteSpecialEvent(evt.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 </div>
               </div>
             </div>
@@ -723,12 +813,8 @@
               <div class="flex items-center justify-between mb-2">
                 <span class="font-black text-sm text-gray-800">{{ memo.title }}</span>
                 <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition">
-                  <button @click="editMemo(memo)" class="p-1 hover:text-purple-700 text-gray-500" title="编辑">
-                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                  </button>
-                  <button @click="deleteMemo(memo.id)" class="p-1 hover:text-red-600 text-gray-500" title="删除">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                  </button>
+                  <button @click="editMemo(memo)" class="p-1 hover:text-purple-700 text-gray-500" title="编辑"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                  <button @click="deleteMemo(memo.id)" class="p-1 hover:text-red-600 text-gray-500" title="删除"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                 </div>
               </div>
               <p class="text-gray-700 text-xs leading-relaxed whitespace-pre-line font-medium">{{ memo.content }}</p>
@@ -738,7 +824,7 @@
       </div>
     </main>
 
-    <!-- ================= 🐶 页面右下角悬浮互动桌面宠物 (6大肢体动作) ================= -->
+    <!-- ================= 🐶 页面右下角悬浮互动桌面宠物 ================= -->
     <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end pointer-events-none select-none">
       <div v-if="petDialogue" class="mb-2 px-3.5 py-2 rounded-2xl bg-white/95 backdrop-blur shadow-lg border border-purple-100 text-xs font-bold text-gray-800 flex items-center gap-1.5 animate-bounce pointer-events-auto">
         <span>🐾 {{ petDialogue }}</span>
@@ -752,6 +838,84 @@
       </div>
     </div>
 
+    <!-- Modal: 微信状态选择器 -->
+    <div v-if="showStatusPicker" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-3xl p-6 max-w-xs w-full shadow-2xl flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-black text-gray-800 text-base">设个当前状态</h3>
+          <button @click="showStatusPicker = false" class="text-gray-400 hover:text-gray-600 text-sm font-bold">×</button>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button v-for="st in statusOptions" :key="st.name" @click="selectStatus(st)" class="p-2.5 rounded-2xl border flex items-center gap-2 transition hover:bg-purple-50 hover:border-purple-200" :class="userStatus.name === st.name ? 'bg-purple-50 border-purple-400 font-black text-purple-700' : 'bg-gray-50 border-gray-100 text-gray-700'">
+            <span class="text-lg">{{ st.icon }}</span>
+            <span>{{ st.name }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: 新增早中晚 TODO -->
+    <div v-if="showAddTodoModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col gap-4">
+        <h3 class="font-black text-gray-800 text-base">添加 TO DO LIST 事项</h3>
+        <div class="flex flex-col gap-3 text-xs">
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">时间段</label>
+            <select v-model="newTodoForm.period" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 font-bold">
+              <option value="morning">🌅 早晨 (Morning)</option>
+              <option value="afternoon">☀️ 午后 (Afternoon)</option>
+              <option value="evening">🌙 晚间 (Evening)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">事项内容</label>
+            <input v-model="newTodoForm.text" type="text" placeholder="例如: 阅读国贸文献 / 做普拉提" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">所属维度 (五大维度同步更新)</label>
+            <select v-model="newTodoForm.dimension" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 font-bold">
+              <option value="学习">📚 学习 (Study)</option>
+              <option value="生活">☕ 生活 (Life)</option>
+              <option value="健康">🌿 健康 (Health)</option>
+              <option value="赚钱">💰 赚钱 (Wealth)</option>
+              <option value="美容">🌸 美容 (Beauty)</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex gap-2 justify-end mt-2">
+          <button @click="showAddTodoModal = false" class="px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-xl">取消</button>
+          <button @click="saveNewTodo" class="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl">添加事项</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: 完成 TODO 时记录起止时间 (关联到24小时时间轴) -->
+    <div v-if="showCompleteTodoModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col gap-4">
+        <h3 class="font-black text-gray-800 text-base">完成打卡 · 记录起止时间</h3>
+        <p class="text-xs text-gray-400">记录的事项时间会自动汇总并映射到下方 24 小时活动时间轴</p>
+        <div class="flex flex-col gap-3 text-xs">
+          <div class="p-2.5 rounded-xl bg-purple-50 text-purple-800 font-bold">
+            {{ completingTodo?.text }} ({{ completingTodo?.dimension }})
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block font-semibold text-gray-600 mb-1">开始时间</label>
+              <input v-model="completeForm.startTime" type="time" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-gray-600 mb-1">结束时间</label>
+              <input v-model="completeForm.endTime" type="time" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 font-mono">
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-2 justify-end mt-2">
+          <button @click="showCompleteTodoModal = false" class="px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-xl">取消</button>
+          <button @click="confirmCompleteTodo" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl">确认完成</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: 新增生活 SOP -->
     <div v-if="showAddSopModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col gap-4">
@@ -762,12 +926,13 @@
             <input v-model="newSopForm.title" type="text" placeholder="例如: 每周阅读一本书 / 每月大扫除" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50">
           </div>
           <div>
-            <label class="block font-semibold text-gray-600 mb-1">所属维度</label>
+            <label class="block font-semibold text-gray-600 mb-1">所属维度 (五大维度)</label>
             <select v-model="newSopForm.category" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 font-bold">
               <option value="学习">📚 学习 (Study)</option>
               <option value="生活">☕ 生活 (Life)</option>
               <option value="健康">🌿 健康 (Health)</option>
-              <option value="变美">🌸 变美 (Beauty)</option>
+              <option value="赚钱">💰 赚钱 (Wealth)</option>
+              <option value="美容">🌸 美容 (Beauty)</option>
             </select>
           </div>
           <div>
@@ -849,17 +1014,17 @@
 
     createApp({
       setup() {
-        const STORAGE_KEY = 'LIFE_PET_APP_DATA_V5';
+        const STORAGE_KEY = 'LIFE_PET_APP_DATA_V6';
 
-        // 页面多视图模式 ('home' | 'focus' | 'sop' | 'fridge' | 'milestones' | 'calendar' | 'memos')
+        // 页面多视图模式
         const currentView = ref('home');
 
         const currentViewTitle = computed(() => {
           switch(currentView.value) {
             case 'focus': return '⏱️ 学习专注';
-            case 'sop': return '🎯 生活 SOP';
+            case 'sop': return '🎯 生活 SOP & TODO';
             case 'fridge': return '🧊 冰箱存货';
-            case 'milestones': return '📝 大事成长';
+            case 'milestones': return '📝 大事档案';
             case 'calendar': return '📅 日历与生日';
             case 'memos': return '📌 备忘便签';
             default: return '';
@@ -871,8 +1036,19 @@
           window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
-        // 默认初始化数据
+        // 微信状态选项
+        const statusOptions = [
+          { name: '元气满满', icon: '☀️' },
+          { name: '专注中', icon: '💡' },
+          { name: '美美护肤', icon: '🌸' },
+          { name: '努力搞钱', icon: '💰' },
+          { name: '运动暴汗', icon: '🏃‍♀️' },
+          { name: '小憩放空', icon: '☕' }
+        ];
+
+        // 默认初始化数据 (包含早中晚 TODO + 5维度支持)
         const getDefaultData = () => ({
+          userStatus: { name: '元气满满', icon: '☀️' },
           todayStudySeconds: 0,
           habits: {
             vocab: { todayCount: 0, doneToday: false },
@@ -881,6 +1057,14 @@
               mask: { lastDate: null }
             }
           },
+          // 早中晚自定义 TODO LIST (关联五维度)
+          todoList: [
+            { id: 1, period: 'morning', text: '喝一杯温开水 + 晨间护肤', dimension: '美容', done: true, startTime: '07:30', endTime: '08:00' },
+            { id: 2, period: 'morning', text: '背 10 个国贸高频词汇', dimension: '学习', done: false, startTime: '', endTime: '' },
+            { id: 3, period: 'afternoon', text: '跟进客户项目并整理账单', dimension: '赚钱', done: true, startTime: '14:00', endTime: '15:30' },
+            { id: 4, period: 'afternoon', text: '做 30 分钟有氧运动', dimension: '健康', done: false, startTime: '', endTime: '' },
+            { id: 5, period: 'evening', text: '整理客厅收纳 + 睡前阅读', dimension: '生活', done: false, startTime: '', endTime: '' }
+          ],
           weeklySopList: [
             { id: 1, title: '🧹 一周打扫一次', category: '生活', done: false },
             { id: 2, title: '✍️ 一周一练字', category: '学习', done: false },
@@ -922,10 +1106,20 @@
           } catch(e) { console.error(e); }
         }, { deep: true });
 
-        // 日期展示
+        // 日期展示 (分两行)
         const now = new Date();
         const daysOfWeek = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
         const currentDateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${daysOfWeek[now.getDay()]}`;
+
+        // 微信状态选择器
+        const showStatusPicker = ref(false);
+        const userStatus = computed(() => state.value.userStatus || { name: '元气满满', icon: '☀️' });
+
+        const selectStatus = (st) => {
+          state.value.userStatus = st;
+          showStatusPicker.value = false;
+          try { confetti({ particleCount: 30, spread: 40, origin: { y: 0.2 } }); } catch(e){}
+        };
 
         // 🐶 真实玩偶透明图片与 6 种肢体动作
         const IMG_FRONT = './pet_front.png';
@@ -1011,14 +1205,83 @@
         const petMood = computed(() => {
           if (state.value.todayStudySeconds >= 7200) return '超开心 🌟';
           if (timerRunning.value) return '认真陪伴中 🐾';
-          return '元气满满 🐶';
+          return userStatus.value.name + ' ' + userStatus.value.icon;
         });
 
         const petQuote = computed(() => {
-          if (state.value.todayStudySeconds >= 7200) return '今天超厉害！已经专注了很长时间，给主人竖起大拇指！';
+          if (state.value.todayStudySeconds >= 7200) return '今天超厉害！专注学习突破了 2 小时，给你大大的拥抱！';
           if (timerRunning.value) return '嘘——正在专心学习中，小狗会一直安静陪着你哦~';
-          return '记得查看冰箱还有什么菜、按时敷面膜，生活有条理的你最棒啦！';
+          return '早中晚 TODO 和周期 SOP 已经准备好啦，今天也一起闪闪发光吧！';
         });
+
+        // 📋 早中晚 TODO 逻辑与时间关联
+        const todoList = computed(() => state.value.todoList || []);
+        const getTodoList = (period) => todoList.value.filter(x => x.period === period);
+
+        const showAddTodoModal = ref(false);
+        const newTodoForm = ref({ period: 'morning', text: '', dimension: '学习' });
+
+        const saveNewTodo = () => {
+          if (!newTodoForm.value.text.trim()) return;
+          if (!state.value.todoList) state.value.todoList = [];
+          state.value.todoList.push({
+            id: Date.now(),
+            period: newTodoForm.value.period,
+            text: newTodoForm.value.text.trim(),
+            dimension: newTodoForm.value.dimension,
+            done: false,
+            startTime: '',
+            endTime: ''
+          });
+          newTodoForm.value = { period: 'morning', text: '', dimension: '学习' };
+          showAddTodoModal.value = false;
+        };
+
+        const deleteTodo = (id) => {
+          state.value.todoList = state.value.todoList.filter(x => x.id !== id);
+        };
+
+        // 完成 TODO 并记录起止时间模态框
+        const showCompleteTodoModal = ref(false);
+        const completingTodo = ref(null);
+        const completeForm = ref({ startTime: '', endTime: '' });
+
+        const openCompleteTodoModal = (todo) => {
+          if (todo.done) {
+            // 取消勾选
+            todo.done = false;
+            return;
+          }
+          completingTodo.value = todo;
+          // 默认填充当前时间前后 30 分钟
+          const endH = now.getHours().toString().padStart(2, '0');
+          const endM = now.getMinutes().toString().padStart(2, '0');
+          const startH = Math.max(0, now.getHours() - 1).toString().padStart(2, '0');
+          completeForm.value = { startTime: `${startH}:00`, endTime: `${endH}:${endM}` };
+          showCompleteTodoModal.value = true;
+        };
+
+        const confirmCompleteTodo = () => {
+          if (completingTodo.value) {
+            completingTodo.value.done = true;
+            completingTodo.value.startTime = completeForm.value.startTime;
+            completingTodo.value.endTime = completeForm.value.endTime;
+            try { confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } }); } catch(e){}
+          }
+          showCompleteTodoModal.value = false;
+        };
+
+        // 五大维度 Badge 样式
+        const getDimensionBadgeClass = (dim) => {
+          switch(dim) {
+            case '学习': return 'bg-study-light text-study-dark';
+            case '生活': return 'bg-life-light text-life-dark';
+            case '健康': return 'bg-health-light text-health-dark';
+            case '赚钱': return 'bg-money-light text-money-dark';
+            case '美容': return 'bg-beauty-light text-beauty-dark';
+            default: return 'bg-gray-100 text-gray-700';
+          }
+        };
 
         // 习惯 SOP
         const habits = computed(() => state.value.habits);
@@ -1145,8 +1408,9 @@
         };
 
         const todaySopStatusText = computed(() => {
-          let total = 3 + (state.value.weeklySopList || []).length;
+          let total = (state.value.todoList || []).length + 3 + (state.value.weeklySopList || []).length;
           let done = 0;
+          (state.value.todoList || []).forEach(x => { if (x.done) done++; });
           if (habits.value.vocab.doneToday) done++;
           if (maskStatus.value.completedToday) done++;
           if (habits.value.workout.doneToday) done++;
@@ -1154,7 +1418,7 @@
           return `已达标 ${done}/${total}`;
         });
 
-        // 🧊 冰箱存货管理逻辑
+        // 🧊 冰箱存货
         const fridgeList = computed(() => state.value.fridgeList || []);
         const fridgeTab = ref('all');
         const newFood = ref({ name: '', quantity: '', zone: 'chill', expiry: '' });
@@ -1184,8 +1448,9 @@
 
         // 今日完成度百分比
         const todayProgressPercent = computed(() => {
-          let total = 3 + (state.value.weeklySopList || []).length;
+          let total = (state.value.todoList || []).length + 3 + (state.value.weeklySopList || []).length;
           let done = 0;
+          (state.value.todoList || []).forEach(x => { if (x.done) done++; });
           if (habits.value.vocab.doneToday) done++;
           if (maskStatus.value.completedToday || !maskStatus.value.dueToday) done++;
           if (habits.value.workout.doneToday) done++;
@@ -1193,26 +1458,111 @@
           return total > 0 ? Math.round((done / total) * 100) : 0;
         });
 
-        // 饼状图统计
+        // 📊 24小时多维时间轴柱状图数据生成 (0:00 - 23:00)
+        const hourlyData = computed(() => {
+          // 初始化 24 小时 5 维度堆叠分钟数
+          const hours = Array.from({ length: 24 }, () => ({
+            study: 0, life: 0, health: 0, money: 0, beauty: 0
+          }));
+
+          // 1. 关联学习专注计时
+          if (state.value.todayStudySeconds > 0) {
+            const currentHour = now.getHours();
+            const minutes = Math.round(state.value.todayStudySeconds / 60);
+            hours[currentHour].study += Math.min(60, minutes);
+          }
+
+          // 2. 关联 TODO LIST 已完成项的起止时间
+          (state.value.todoList || []).forEach(todo => {
+            if (todo.done && todo.startTime && todo.endTime) {
+              const startH = parseInt(todo.startTime.split(':')[0], 10);
+              const endH = parseInt(todo.endTime.split(':')[0], 10);
+              const dimKey = todo.dimension === '学习' ? 'study' : (todo.dimension === '生活' ? 'life' : (todo.dimension === '健康' ? 'health' : (todo.dimension === '赚钱' ? 'money' : 'beauty')));
+
+              for (let h = startH; h <= Math.min(23, endH); h++) {
+                hours[h][dimKey] += 45; // 估算填充区间
+              }
+            }
+          });
+
+          return hours;
+        });
+
+        // 底部条形概览比例
         const pieStats = computed(() => {
-          let study = 0;
-          if (habits.value.vocab.doneToday) study += 30;
-          if (state.value.todayStudySeconds > 0) study += Math.min(40, Math.round((state.value.todayStudySeconds / 7200) * 40));
-
-          let health = habits.value.workout.doneToday ? 60 : (habits.value.workout.weekCount > 0 ? 30 : 10);
-          let beauty = maskStatus.value.completedToday ? 80 : (maskStatus.value.dueToday ? 20 : 50);
-
-          let lifeDone = (state.value.weeklySopList || []).filter(x => x.done).length;
-          let life = Math.round((lifeDone / Math.max(1, (state.value.weeklySopList || []).length)) * 100);
-
-          const total = Math.max(1, study + health + beauty + life);
+          let study = 0, health = 0, beauty = 0, life = 0, money = 0;
+          hourlyData.value.forEach(h => {
+            study += h.study; health += h.health; beauty += h.beauty; life += h.life; money += h.money;
+          });
+          const total = Math.max(1, study + health + beauty + life + money);
           return {
             study: Math.round((study / total) * 100),
             health: Math.round((health / total) * 100),
             beauty: Math.round((beauty / total) * 100),
-            life: Math.round((life / total) * 100)
+            life: Math.round((life / total) * 100),
+            money: Math.round((money / total) * 100)
           };
         });
+
+        let chartInstance = null;
+        const updateChart = () => {
+          const ctx = document.getElementById('hourlyBarChart');
+          if (!ctx) return;
+
+          const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+          const datasetStudy = hourlyData.value.map(h => h.study);
+          const datasetLife = hourlyData.value.map(h => h.life);
+          const datasetHealth = hourlyData.value.map(h => h.health);
+          const datasetMoney = hourlyData.value.map(h => h.money);
+          const datasetBeauty = hourlyData.value.map(h => h.beauty);
+
+          if (chartInstance) {
+            chartInstance.data.datasets[0].data = datasetStudy;
+            chartInstance.data.datasets[1].data = datasetLife;
+            chartInstance.data.datasets[2].data = datasetHealth;
+            chartInstance.data.datasets[3].data = datasetMoney;
+            chartInstance.data.datasets[4].data = datasetBeauty;
+            chartInstance.update();
+          } else {
+            chartInstance = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                labels: labels,
+                datasets: [
+                  { label: '学习', data: datasetStudy, backgroundColor: '#8B5CF6', borderRadius: 4, stack: 'combined' },
+                  { label: '生活', data: datasetLife, backgroundColor: '#F59E0B', borderRadius: 4, stack: 'combined' },
+                  { label: '健康', data: datasetHealth, backgroundColor: '#10B981', borderRadius: 4, stack: 'combined' },
+                  { label: '赚钱', data: datasetMoney, backgroundColor: '#16A34A', borderRadius: 4, stack: 'combined' },
+                  { label: '美容', data: datasetBeauty, backgroundColor: '#EC4899', borderRadius: 4, stack: 'combined' }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    callbacks: {
+                      label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw} 分钟`
+                    }
+                  }
+                },
+                scales: {
+                  x: {
+                    grid: { display: false },
+                    ticks: { font: { family: '"JetBrains Mono"', size: 10 }, color: '#9CA3AF' }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    max: 60,
+                    grid: { color: '#F3F4F6' },
+                    ticks: { stepSize: 20, font: { family: '"JetBrains Mono"', size: 10 }, color: '#9CA3AF' }
+                  }
+                }
+              }
+            });
+          }
+        };
 
         // 大事归档
         const milestoneView = ref('day');
@@ -1259,16 +1609,6 @@
             return list.filter(x => !x.date || x.date.startsWith(currentMonthStr));
           }
         });
-
-        const getCategoryBadgeClass = (cat) => {
-          switch(cat) {
-            case '学习': return 'bg-study-light text-study-dark';
-            case '生活': return 'bg-life-light text-life-dark';
-            case '健康': return 'bg-health-light text-health-dark';
-            case '变美': return 'bg-beauty-light text-beauty-dark';
-            default: return 'bg-gray-100 text-gray-700';
-          }
-        };
 
         // 日历与纪念日
         const calendarYear = ref(now.getFullYear());
@@ -1396,7 +1736,7 @@
           const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.value, null, 2));
           const downloadAnchor = document.createElement('a');
           downloadAnchor.setAttribute("href", dataStr);
-          downloadAnchor.setAttribute("download", `治愈小铺数据备份_${now.toISOString().slice(0,10)}.json`);
+          downloadAnchor.setAttribute("download", `小爱数据备份_${now.toISOString().slice(0,10)}.json`);
           document.body.appendChild(downloadAnchor);
           downloadAnchor.click();
           downloadAnchor.remove();
@@ -1420,11 +1760,15 @@
 
         onMounted(() => {
           try { lucide.createIcons(); } catch(e){}
+          updateChart();
         });
 
-        watch([state, currentView], () => {
+        watch([hourlyData, currentView, state], () => {
           setTimeout(() => {
             try { lucide.createIcons(); } catch(e){}
+            if (currentView.value === 'home') {
+              updateChart();
+            }
           }, 50);
         }, { deep: true });
 
@@ -1433,6 +1777,10 @@
           currentViewTitle,
           openView,
           currentDateStr,
+          statusOptions,
+          showStatusPicker,
+          userStatus,
+          selectStatus,
           todayStudySeconds: computed(() => state.value.todayStudySeconds),
           timerSeconds,
           timerRunning,
@@ -1450,6 +1798,18 @@
           petMood,
           petQuote,
           habits,
+          todoList,
+          getTodoList,
+          showAddTodoModal,
+          newTodoForm,
+          saveNewTodo,
+          deleteTodo,
+          showCompleteTodoModal,
+          completingTodo,
+          completeForm,
+          openCompleteTodoModal,
+          confirmCompleteTodo,
+          getDimensionBadgeClass,
           weeklySopList,
           intervalSopList,
           toggleVocab,
@@ -1480,7 +1840,6 @@
           addMilestone,
           deleteMilestone,
           displayedMilestones,
-          getCategoryBadgeClass,
           calendarYear,
           calendarMonth,
           calendarDays,

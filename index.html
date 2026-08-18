@@ -555,43 +555,43 @@
 
         <div class="flex flex-col gap-3.5">
           <!-- 背单词 -->
-          <div @click="toggleVocab" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm"
+          <div @click="toggleVocab" class="p-4 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm gap-3"
                :class="habits.vocab.doneToday ? 'bg-purple-50/80 border-purple-300' : 'bg-white border-gray-100 hover:border-purple-200'">
-            <div class="flex items-center gap-3.5">
-              <div class="w-9 h-9 rounded-xl flex items-center justify-center transition"
+            <div class="flex items-center gap-3.5 w-full sm:w-auto">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center transition shrink-0"
                    :class="habits.vocab.doneToday ? 'bg-study text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
                 <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
               </div>
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-black px-2 py-0.5 rounded-md bg-study-light text-study-dark">学习 · 每日</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-xs font-black px-2 py-0.5 rounded-md bg-study-light text-study-dark whitespace-nowrap">学习 · 每日</span>
                   <h4 class="font-black text-base text-gray-800">每天背 10 个单词</h4>
                 </div>
-                <div class="mt-1 flex items-baseline gap-1">
+                <div class="mt-1 flex items-baseline gap-1 flex-wrap">
                   <span class="text-xs font-semibold text-gray-500">今日已背:</span>
                   <span class="text-xl font-black font-mono text-purple-600">{{ habits.vocab.todayCount }}</span>
                   <span class="text-xs font-bold text-gray-400">/ 10 词</span>
-                  <span v-if="habits.vocab.doneToday" class="ml-2 text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">已达标 ✨</span>
+                  <span v-if="habits.vocab.doneToday" class="text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">已达标 ✨</span>
                 </div>
               </div>
             </div>
-            <div class="flex items-center gap-1.5" @click.stop>
-              <button @click="addVocab(-1)" class="w-8 h-8 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 font-black text-sm hover:bg-gray-100 flex items-center justify-center">-</button>
-              <button @click="addVocab(1)" class="w-8 h-8 rounded-xl bg-study text-white font-black text-sm hover:bg-study-dark flex items-center justify-center shadow">+</button>
+            <div class="flex items-center gap-1.5 ml-auto sm:ml-0" @click.stop>
+              <button @click="addVocab(-1)" class="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 font-black text-sm hover:bg-gray-100 flex items-center justify-center active:scale-95">-</button>
+              <button @click="addVocab(1)" class="w-9 h-9 rounded-xl bg-study text-white font-black text-sm hover:bg-study-dark flex items-center justify-center shadow active:scale-95">+</button>
             </div>
           </div>
 
           <!-- 隔天面膜 -->
-          <div @click="checkInHabit('mask')" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm"
+          <div @click="checkInHabit('mask')" class="p-4 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm gap-3"
                :class="maskStatus.completedToday ? 'bg-pink-50/80 border-pink-300' : (maskStatus.dueToday ? 'bg-pink-50/40 border-pink-200' : 'bg-white border-gray-100')">
-            <div class="flex items-center gap-3.5">
-              <div class="w-9 h-9 rounded-xl flex items-center justify-center transition"
+            <div class="flex items-center gap-3.5 w-full sm:w-auto">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center transition shrink-0"
                    :class="maskStatus.completedToday ? 'bg-beauty text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
                 <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
               </div>
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-black px-2 py-0.5 rounded-md bg-beauty-light text-beauty-dark">美容 · 隔天</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-xs font-black px-2 py-0.5 rounded-md bg-beauty-light text-beauty-dark whitespace-nowrap">美容 · 隔天</span>
                   <h4 class="font-black text-base text-gray-800">隔天敷面膜</h4>
                 </div>
                 <p class="text-xs mt-1 font-semibold" :class="maskStatus.dueToday && !maskStatus.completedToday ? 'text-pink-600' : 'text-gray-400'">
@@ -599,85 +599,85 @@
                 </p>
               </div>
             </div>
-            <span v-if="maskStatus.dueToday && !maskStatus.completedToday" class="text-xs px-2.5 py-1 rounded-xl bg-pink-500 text-white font-black animate-pulse shadow-sm">今日需敷</span>
+            <span v-if="maskStatus.dueToday && !maskStatus.completedToday" class="text-xs px-2.5 py-1 rounded-xl bg-pink-500 text-white font-black animate-pulse shadow-sm ml-auto sm:ml-0">今日需敷</span>
           </div>
 
           <!-- 一周锻炼4天 -->
-          <div @click="toggleWorkoutToday" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm"
+          <div @click="toggleWorkoutToday" class="p-4 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm gap-3"
                :class="habits.workout.doneToday ? 'bg-green-50/80 border-green-300' : 'bg-white border-gray-100'">
-            <div class="flex items-center gap-3.5">
-              <div class="w-9 h-9 rounded-xl flex items-center justify-center transition"
+            <div class="flex items-center gap-3.5 w-full sm:w-auto">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center transition shrink-0"
                    :class="habits.workout.doneToday ? 'bg-health text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
                 <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
               </div>
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-black px-2 py-0.5 rounded-md bg-health-light text-health-dark">健康 · 每周</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-xs font-black px-2 py-0.5 rounded-md bg-health-light text-health-dark whitespace-nowrap">健康 · 每周</span>
                   <h4 class="font-black text-base text-gray-800">一周锻炼 4 天</h4>
                 </div>
-                <div class="mt-1 flex items-baseline gap-1">
+                <div class="mt-1 flex items-baseline gap-1 flex-wrap">
                   <span class="text-xs font-semibold text-gray-500">本周已练:</span>
                   <span class="text-base font-black font-mono text-emerald-600">{{ habits.workout.weekCount }}</span>
                   <span class="text-xs font-bold text-gray-400">/ 4 天</span>
                 </div>
               </div>
             </div>
-            <span class="text-xs font-bold text-gray-400">{{ habits.workout.doneToday ? '今日已打卡' : '点击打卡' }}</span>
+            <span class="text-xs font-bold text-gray-400 ml-auto sm:ml-0">{{ habits.workout.doneToday ? '今日已打卡' : '点击打卡' }}</span>
           </div>
 
           <!-- 每周 SOP 集合 -->
           <div class="flex flex-col gap-3.5">
-            <div v-for="item in weeklySopList" :key="item.id" @click="toggleWeeklySopItem(item.id)" class="p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm group"
+            <div v-for="item in weeklySopList" :key="item.id" @click="toggleWeeklySopItem(item.id)" class="p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm group gap-3"
                  :class="item.done ? 'bg-amber-50/90 border-amber-300' : 'bg-white border-gray-100 hover:border-amber-200'">
-              <div class="flex items-center gap-3.5">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center transition"
+              <div class="flex items-center gap-3.5 w-full sm:w-auto min-w-0">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center transition shrink-0"
                      :class="item.done ? 'bg-life text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
                   <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
                 </div>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-black px-2 py-0.5 rounded-md" :class="getDimensionBadgeClass(item.category)">{{ item.category }} · 每周</span>
-                    <h4 class="font-black text-base text-gray-800">{{ item.title }}</h4>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-black px-2 py-0.5 rounded-md whitespace-nowrap" :class="getDimensionBadgeClass(item.category)">{{ item.category }} · 每周</span>
+                    <h4 class="font-black text-base text-gray-800 break-words">{{ item.title }}</h4>
                   </div>
                   <p class="text-xs mt-1 font-semibold text-gray-400">{{ item.done ? '本周已完成 ✨' : '本周待完成' }}</p>
                 </div>
               </div>
-              <div class="flex items-center gap-1 shrink-0">
-                <button @click.stop="editWeeklySopItem(item)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-purple-600 transition p-2">
+              <div class="flex items-center gap-1 shrink-0 ml-auto sm:ml-0">
+                <button @click.stop="editWeeklySopItem(item)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-purple-600 transition rounded-xl hover:bg-purple-50 active:scale-95">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
                 </button>
-                <button @click.stop="deleteWeeklySopItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-2">
+                <button @click.stop="deleteWeeklySopItem(item.id)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 transition rounded-xl hover:bg-red-50 active:scale-95">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
               </div>
             </div>
 
             <!-- 每周N次 SOP 集合 -->
-            <div v-for="item in weeklyCountSopList" :key="item.id" @click="toggleWeeklyCountItem(item.id)" class="p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm group"
+            <div v-for="item in weeklyCountSopList" :key="item.id" @click="toggleWeeklyCountItem(item.id)" class="p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm group gap-3"
                  :class="item.weekCount >= item.targetCount ? 'bg-emerald-50/90 border-emerald-300' : 'bg-white border-gray-100 hover:border-emerald-200'">
-              <div class="flex items-center gap-3.5">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center transition"
+              <div class="flex items-center gap-3.5 w-full sm:w-auto min-w-0">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center transition shrink-0"
                      :class="item.weekCount >= item.targetCount ? 'bg-health text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
                   <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
                 </div>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-black px-2 py-0.5 rounded-md" :class="getDimensionBadgeClass(item.category)">{{ item.category }} · 每周</span>
-                    <h4 class="font-black text-base text-gray-800">{{ item.title }}</h4>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-black px-2 py-0.5 rounded-md whitespace-nowrap" :class="getDimensionBadgeClass(item.category)">{{ item.category }} · 每周</span>
+                    <h4 class="font-black text-base text-gray-800 break-words">{{ item.title }}</h4>
                   </div>
-                  <div class="mt-1 flex items-baseline gap-1">
+                  <div class="mt-1 flex items-baseline gap-1 flex-wrap">
                     <span class="text-xs font-semibold text-gray-500">本周已完成:</span>
                     <span class="text-base font-black font-mono text-emerald-600">{{ item.weekCount }}</span>
                     <span class="text-xs font-bold text-gray-400">/ {{ item.targetCount }} 次</span>
-                    <span v-if="item.weekCount >= item.targetCount" class="ml-2 text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">已达标 ✨</span>
+                    <span v-if="item.weekCount >= item.targetCount" class="text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">已达标 ✨</span>
                   </div>
                 </div>
               </div>
-              <div class="flex items-center gap-1 shrink-0">
-                <button @click.stop="editWeeklyCountItem(item)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-purple-600 transition p-2">
+              <div class="flex items-center gap-1 shrink-0 ml-auto sm:ml-0">
+                <button @click.stop="editWeeklyCountItem(item)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-purple-600 transition rounded-xl hover:bg-purple-50 active:scale-95">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
                 </button>
-                <button @click.stop="deleteWeeklyCountItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-2">
+                <button @click.stop="deleteWeeklyCountItem(item.id)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 transition rounded-xl hover:bg-red-50 active:scale-95">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
               </div>
@@ -1043,7 +1043,7 @@
     </main>
 
     <!-- ================= 🐶 页面右下角悬浮互动桌面宠物 ================= -->
-    <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end pointer-events-none select-none">
+    <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end pointer-events-none select-none hidden sm:flex">
       <div v-if="petDialogue" class="mb-2 px-3.5 py-2 rounded-2xl bg-white/95 backdrop-blur shadow-lg border border-purple-100 text-xs font-bold text-gray-800 flex items-center gap-1.5 animate-bounce pointer-events-auto">
         <span>🐾 {{ petDialogue }}</span>
       </div>

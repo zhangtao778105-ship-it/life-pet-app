@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>治愈小铺 · 生活陪伴工作台</title>
+  <title>治愈小铺</title>
   <!-- iOS PWA 体验专项支持 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -18,12 +18,14 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Canvas Confetti for Celebration -->
+  <!-- Chart.js (用于高颜值饼状图) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -57,55 +59,55 @@
     /* 基础待机悬浮呼吸 */
     @keyframes pet-idle {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-6px) rotate(1.5deg); }
+      50% { transform: translateY(-5px) rotate(1.5deg); }
     }
     .pet-idle {
       animation: pet-idle 3.5s ease-in-out infinite;
     }
 
-    /* 1. 扭屁股 (转到背面左右摇摆) */
+    /* 1. 扭屁股 (切换背面左右剧烈扭动) */
     @keyframes wiggle-butt {
       0% { transform: scale(1) rotate(0deg); }
-      20% { transform: scale(1.05) rotate(-12deg) translateX(-4px); }
-      40% { transform: scale(1.05) rotate(12deg) translateX(4px); }
-      60% { transform: scale(1.05) rotate(-10deg) translateX(-3px); }
-      80% { transform: scale(1.05) rotate(10deg) translateX(3px); }
+      20% { transform: scale(1.1) rotate(-16deg) translateX(-6px); }
+      40% { transform: scale(1.1) rotate(16deg) translateX(6px); }
+      60% { transform: scale(1.1) rotate(-12deg) translateX(-4px); }
+      80% { transform: scale(1.1) rotate(12deg) translateX(4px); }
       100% { transform: scale(1) rotate(0deg); }
     }
     .anim-wiggle {
       animation: wiggle-butt 1.2s cubic-bezier(0.36, 0.07, 0.19, 0.97);
     }
 
-    /* 2. 欢快跳跃 */
+    /* 2. 欢快起跳 */
     @keyframes pet-jump {
       0% { transform: translateY(0) scale(1, 1); }
-      25% { transform: translateY(4px) scale(1.15, 0.85); }
-      50% { transform: translateY(-32px) scale(0.9, 1.15) rotate(-3deg); }
-      75% { transform: translateY(-16px) scale(1.05, 0.95) rotate(3deg); }
-      90% { transform: translateY(2px) scale(1.08, 0.92); }
+      25% { transform: translateY(6px) scale(1.2, 0.8); }
+      50% { transform: translateY(-38px) scale(0.85, 1.2) rotate(-4deg); }
+      75% { transform: translateY(-16px) scale(1.05, 0.95) rotate(4deg); }
+      90% { transform: translateY(2px) scale(1.1, 0.9); }
       100% { transform: translateY(0) scale(1, 1); }
     }
     .anim-jump {
-      animation: pet-jump 0.9s ease-in-out;
+      animation: pet-jump 0.95s ease-in-out;
     }
 
-    /* 3. 压扁回弹 (果冻弹性) */
+    /* 3. 压扁回弹 (Q弹果冻) */
     @keyframes pet-squish {
       0% { transform: scale(1, 1); }
-      20% { transform: scale(1.35, 0.65) translateY(12px); }
-      45% { transform: scale(0.8, 1.25) translateY(-14px); }
-      65% { transform: scale(1.15, 0.9) translateY(4px); }
-      80% { transform: scale(0.95, 1.05) translateY(-2px); }
+      20% { transform: scale(1.45, 0.55) translateY(16px); }
+      45% { transform: scale(0.75, 1.3) translateY(-18px); }
+      65% { transform: scale(1.2, 0.85) translateY(5px); }
+      85% { transform: scale(0.95, 1.05) translateY(-2px); }
       100% { transform: scale(1, 1) translateY(0); }
     }
     .anim-squish {
-      animation: pet-squish 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: pet-squish 0.95s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    /* 4. 快乐转圈圈 360° */
+    /* 4. 快乐360°旋转大回旋 */
     @keyframes pet-spin {
       0% { transform: rotate(0deg) scale(1); }
-      40% { transform: rotate(180deg) scale(1.2) translateY(-15px); }
+      40% { transform: rotate(180deg) scale(1.25) translateY(-20px); }
       80% { transform: rotate(360deg) scale(1.1) translateY(-4px); }
       100% { transform: rotate(360deg) scale(1) translateY(0); }
     }
@@ -113,13 +115,35 @@
       animation: pet-spin 0.95s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* 计时器呼吸光晕 */
-    @keyframes neon-pulse {
-      0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.15), inset 0 0 15px rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.4); }
-      50% { box-shadow: 0 0 35px rgba(236, 72, 153, 0.3), inset 0 0 25px rgba(236, 72, 153, 0.15); border-color: rgba(236, 72, 153, 0.6); }
+    /* 5. 害羞摇头 (左右探头) */
+    @keyframes pet-shy {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(-18deg) scale(1.08) translateX(-5px); }
+      50% { transform: rotate(18deg) scale(1.08) translateX(5px); }
+      75% { transform: rotate(-10deg) scale(1.05) translateX(-3px); }
     }
-    .timer-active-glow {
-      animation: neon-pulse 3s infinite ease-in-out;
+    .anim-shy {
+      animation: pet-shy 1s ease-in-out;
+    }
+
+    /* 6. 打瞌睡点点头 */
+    @keyframes pet-nod {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      30% { transform: translateY(8px) rotate(8deg); }
+      60% { transform: translateY(12px) rotate(12deg); }
+      80% { transform: translateY(-3px) rotate(-4deg); }
+    }
+    .anim-nod {
+      animation: pet-nod 1.1s ease-in-out;
+    }
+
+    /* 计时器呼吸光晕 */
+    @keyframes timer-glow {
+      0%, 100% { box-shadow: 0 0 25px rgba(139, 92, 246, 0.15), inset 0 0 15px rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(236, 72, 153, 0.35), inset 0 0 25px rgba(236, 72, 153, 0.18); border-color: rgba(236, 72, 153, 0.65); }
+    }
+    .timer-running-box {
+      animation: timer-glow 3s infinite ease-in-out;
     }
   </style>
 </head>
@@ -134,7 +158,7 @@
         </div>
         <div>
           <h1 class="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 bg-clip-text text-transparent flex items-center gap-2">
-            治愈小铺 · 陪伴工作台
+            治愈小铺
           </h1>
           <p class="text-xs sm:text-sm text-gray-400 font-medium">
             {{ currentDateStr }} · 每一个自律的小瞬间，都会让生活更可爱 🌸
@@ -159,31 +183,15 @@
     <!-- Main Grid Dashboard -->
     <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start flex-1">
 
-      <!-- ================= LEFT COLUMN: 萌宠看板 + 美化学习计时器 + 四维度实时分析 (4 Cols) ================= -->
+      <!-- ================= LEFT COLUMN: 萌宠看板 + 全新极简计时器 + 饼状图能量分布 (4 Cols) ================= -->
       <section class="lg:col-span-4 flex flex-col gap-6">
 
-        <!-- Service Worker Registration & Install Banner -->
-        <div v-if="deferredPrompt" class="bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 rounded-3xl p-4 shadow-lg flex items-center justify-between text-white animate-fade-in">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center p-1">
-              <img src="./pet_front.png" class="w-full h-full object-contain">
-            </div>
-            <div>
-              <h4 class="font-black text-sm">安装到手机桌面</h4>
-              <p class="text-[11px] text-white/80">无需下载，一键生成独立小狗 App</p>
-            </div>
-          </div>
-          <button @click="installPWA" class="px-4 py-2 bg-white text-purple-700 font-black text-xs rounded-xl shadow active:scale-95 transition hover:bg-gray-50">
-            立即安装
-          </button>
-        </div>
-
-        <!-- 🐶 萌宠互动大看板 (点击互动) -->
+        <!-- 🐶 萌宠看板 (点击触发多姿态动作) -->
         <div @click="triggerPetAction" class="bg-gradient-to-br from-purple-50/90 via-pink-50/70 to-amber-50/80 rounded-3xl p-6 shadow-sm border border-purple-100/70 relative overflow-hidden cursor-pointer group select-none transition hover:shadow-md">
           <div class="flex items-center gap-4">
             <div class="w-24 h-24 bg-white/90 rounded-3xl p-1.5 shadow-sm flex items-center justify-center shrink-0 border border-white relative overflow-hidden">
               <img :src="currentPetImg" alt="Pet Plush Mascot" class="w-full h-full object-contain" :class="petAnimClass">
-              <div v-if="actionBadgeText" class="absolute bottom-1 px-1.5 py-0.5 rounded-full bg-purple-600 text-[9px] font-black text-white shadow animate-bounce">
+              <div v-if="actionBadgeText" class="absolute bottom-1 px-2 py-0.5 rounded-full bg-purple-600 text-[9px] font-black text-white shadow animate-bounce">
                 {{ actionBadgeText }}
               </div>
             </div>
@@ -191,7 +199,7 @@
               <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white text-purple-700 mb-1.5 shadow-sm border border-purple-100">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 <span>{{ petMood }}</span>
-                <span class="text-[10px] text-gray-400 font-normal ml-1">· 点击戳我 🐾</span>
+                <span class="text-[10px] text-gray-400 font-normal ml-1">· 点击互动 🐾</span>
               </div>
               <p class="text-xs sm:text-sm font-bold text-gray-700 leading-snug">
                 "{{ petQuote }}"
@@ -202,7 +210,7 @@
           <!-- 今日完成度进度条 -->
           <div class="mt-5 pt-4 border-t border-purple-100/80">
             <div class="flex justify-between items-center text-xs text-gray-600 font-bold mb-1.5">
-              <span>今日综合打卡完成度</span>
+              <span>今日生活 SOP 达成度</span>
               <span class="text-purple-600 font-black text-sm">{{ todayProgressPercent }}%</span>
             </div>
             <div class="w-full bg-white rounded-full h-3 overflow-hidden p-0.5 border border-purple-100 shadow-inner">
@@ -211,9 +219,9 @@
           </div>
         </div>
 
-        <!-- ⏱️ 美化高颜值专注学习计时器 -->
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center">
-          <div class="w-full flex items-center justify-between mb-3">
+        <!-- ⏱️ 全新美化排版学习计时器 (开始 / 暂停 / 结算) -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-study"></span>
               <h2 class="font-black text-gray-800 text-base">学习专注计时</h2>
@@ -224,119 +232,91 @@
             </div>
           </div>
 
-          <!-- 艺术感计时圆盘 -->
-          <div class="my-5 relative flex items-center justify-center">
-            <div class="w-52 h-52 rounded-full border-2 border-dashed border-purple-200 flex items-center justify-center bg-gradient-to-br from-purple-50/50 via-white to-pink-50/30 shadow-inner transition-all duration-500"
-                 :class="{ 'timer-active-glow border-solid border-purple-400': timerRunning }">
-
-              <div class="flex flex-col items-center justify-center text-center">
-                <span class="text-xs font-extrabold uppercase tracking-widest text-purple-400 mb-1">
-                  {{ timerRunning ? 'FOCUSING' : 'READY TO STUDY' }}
-                </span>
-                <span class="text-3xl sm:text-4xl font-black font-mono tracking-tight text-gray-800">
-                  {{ formatTimer(timerSeconds) }}
-                </span>
-                <span class="text-[11px] text-gray-400 font-semibold mt-2 px-3 py-0.5 rounded-full bg-gray-50 border border-gray-100">
-                  {{ timerRunning ? '🔥 深度心流沉浸中...' : '点击下方开始记录' }}
-                </span>
-              </div>
+          <!-- 现代胶囊极简计时卡片 -->
+          <div class="py-6 px-4 rounded-3xl bg-gradient-to-br from-purple-50/60 via-white to-pink-50/40 border-2 border-purple-100 flex flex-col items-center justify-center transition-all duration-500"
+               :class="{ 'timer-running-box border-purple-300': timerRunning }">
+            <span class="text-[11px] font-extrabold uppercase tracking-widest text-purple-400 mb-1.5">
+              {{ timerRunning ? '🔥 深度专注心流中' : 'READY TO STUDY' }}
+            </span>
+            <div class="text-4xl sm:text-5xl font-black font-mono tracking-tight text-gray-800 my-1">
+              {{ formatTimer(timerSeconds) }}
             </div>
+            <span class="text-xs text-gray-400 font-medium mt-1">
+              {{ timerRunning ? '小狗正在为你加油打气 🐶' : '点击下方按钮开始计时' }}
+            </span>
           </div>
 
-          <!-- 计时器控制按键 -->
-          <div class="flex items-center gap-3 w-full mt-2">
-            <button v-if="!timerRunning" @click="startTimer" class="flex-1 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-purple-200 hover:from-purple-700 hover:to-indigo-700 transition flex items-center justify-center gap-2 active:scale-95">
+          <!-- 计时器三大核心控制按键 -->
+          <div class="grid grid-cols-3 gap-2.5 w-full">
+            <button v-if="!timerRunning" @click="startTimer" class="col-span-2 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-lg shadow-purple-200 hover:from-purple-700 hover:to-indigo-700 transition flex items-center justify-center gap-1.5 active:scale-95">
               <i data-lucide="play" class="w-4 h-4 fill-white"></i> 开始专注
             </button>
-            <button v-else @click="pauseTimer" class="flex-1 py-3.5 bg-amber-500 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-amber-200 hover:bg-amber-600 transition flex items-center justify-center gap-2 active:scale-95">
-              <i data-lucide="pause" class="w-4 h-4 fill-white"></i> 暂停一下
+            <button v-else @click="pauseTimer" class="col-span-2 py-3 bg-amber-500 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-lg shadow-amber-200 hover:bg-amber-600 transition flex items-center justify-center gap-1.5 active:scale-95">
+              <i data-lucide="pause" class="w-4 h-4 fill-white"></i> 暂停计时
             </button>
-            <button @click="stopAndSaveTimer" class="px-5 py-3.5 bg-gray-100 text-gray-700 font-extrabold text-sm rounded-2xl hover:bg-gray-200 transition flex items-center justify-center gap-2 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed" :disabled="timerSeconds === 0">
-              <i data-lucide="square" class="w-4 h-4 fill-current"></i> 结算
+            <button @click="stopAndSaveTimer" class="col-span-1 py-3 bg-gray-100 text-gray-700 font-extrabold text-xs sm:text-sm rounded-2xl hover:bg-gray-200 transition flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed" :disabled="timerSeconds === 0">
+              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i> 结算
             </button>
           </div>
         </div>
 
-        <!-- 🎨 四大维度生活能量分布 (实时联动) -->
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
+        <!-- 📊 四大维度生活能量分布 (纯图表饼状图 + 图例) -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
             <h3 class="font-black text-gray-800 text-sm flex items-center gap-2">
-              <i data-lucide="activity" class="w-4 h-4 text-purple-500"></i> 一天多维能量实时分布
+              <i data-lucide="pie-chart" class="w-4 h-4 text-purple-500"></i> 多维生活能量饼状图
             </h3>
-            <span class="text-[11px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md">实时动态</span>
+            <span class="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md">实时计算</span>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
-            <!-- 学习 -->
-            <div class="p-3.5 rounded-2xl bg-study-light/60 border border-study-light flex flex-col gap-1.5">
-              <div class="flex items-center justify-between text-xs font-black text-study-dark">
-                <span>📚 学习 (Study)</span>
-                <span>{{ formatHours(todayStudySeconds) }}</span>
-              </div>
-              <div class="w-full bg-white/80 rounded-full h-2 overflow-hidden shadow-inner">
-                <div class="bg-study h-full rounded-full transition-all duration-500" :style="{ width: stats.studyPercent + '%' }"></div>
-              </div>
-              <span class="text-[10px] text-gray-400 font-semibold">包含专注时长与练字背词</span>
-            </div>
+          <!-- 饼状图容器 -->
+          <div class="relative w-full h-52 flex items-center justify-center">
+            <canvas id="energyPieChart" class="max-h-full"></canvas>
+          </div>
 
-            <!-- 健康 -->
-            <div class="p-3.5 rounded-2xl bg-health-light/60 border border-health-light flex flex-col gap-1.5">
-              <div class="flex items-center justify-between text-xs font-black text-health-dark">
-                <span>🌿 健康 (Health)</span>
-                <span>{{ stats.healthDoneCount }} / {{ stats.healthTotalCount }} 项</span>
-              </div>
-              <div class="w-full bg-white/80 rounded-full h-2 overflow-hidden shadow-inner">
-                <div class="bg-health h-full rounded-full transition-all duration-500" :style="{ width: stats.healthPercent + '%' }"></div>
-              </div>
-              <span class="text-[10px] text-gray-400 font-semibold">包含日常运动与身体呵护</span>
+          <!-- 图例小标签 -->
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-study"></span>
+              <span class="text-gray-600 font-semibold">学习: {{ pieStats.study }}%</span>
             </div>
-
-            <!-- 变美 -->
-            <div class="p-3.5 rounded-2xl bg-beauty-light/60 border border-beauty-light flex flex-col gap-1.5">
-              <div class="flex items-center justify-between text-xs font-black text-beauty-dark">
-                <span>🌸 变美 (Beauty)</span>
-                <span>{{ stats.beautyDoneCount }} / {{ stats.beautyTotalCount }} 项</span>
-              </div>
-              <div class="w-full bg-white/80 rounded-full h-2 overflow-hidden shadow-inner">
-                <div class="bg-beauty h-full rounded-full transition-all duration-500" :style="{ width: stats.beautyPercent + '%' }"></div>
-              </div>
-              <span class="text-[10px] text-gray-400 font-semibold">包含面膜护肤、美甲发型</span>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-health"></span>
+              <span class="text-gray-600 font-semibold">健康: {{ pieStats.health }}%</span>
             </div>
-
-            <!-- 生活 -->
-            <div class="p-3.5 rounded-2xl bg-life-light/60 border border-life-light flex flex-col gap-1.5">
-              <div class="flex items-center justify-between text-xs font-black text-life-dark">
-                <span>☕ 生活 (Life)</span>
-                <span>{{ stats.lifeDoneCount }} / {{ stats.lifeTotalCount }} 项</span>
-              </div>
-              <div class="w-full bg-white/80 rounded-full h-2 overflow-hidden shadow-inner">
-                <div class="bg-life h-full rounded-full transition-all duration-500" :style="{ width: stats.lifePercent + '%' }"></div>
-              </div>
-              <span class="text-[10px] text-gray-400 font-semibold">包含打扫、视频、每周记账</span>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-beauty"></span>
+              <span class="text-gray-600 font-semibold">变美: {{ pieStats.beauty }}%</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-life"></span>
+              <span class="text-gray-600 font-semibold">生活: {{ pieStats.life }}%</span>
             </div>
           </div>
         </div>
 
       </section>
 
-      <!-- ================= MIDDLE COLUMN: 智能周期任务打卡清单 (高响应+超醒目背词) + 每日大事 (5 Cols) ================= -->
+      <!-- ================= MIDDLE COLUMN: 生活 SOP 打卡清单 (支持全量增删) + 每日大事与周/月总结 (5 Cols) ================= -->
       <section class="lg:col-span-5 flex flex-col gap-6">
 
-        <!-- 🎯 智能周期打卡总览 -->
+        <!-- 🎯 生活 SOP 智能打卡清单 (支持任意自定义增删) -->
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-pink-500"></span>
-              <h2 class="font-black text-gray-800 text-base">智能生活习惯与周期打卡</h2>
+              <h2 class="font-black text-gray-800 text-base">生活 SOP 智能周期打卡</h2>
             </div>
-            <span class="text-xs text-gray-400 font-medium">点击整行或勾选框即可打卡</span>
+            <button @click="showAddSopModal = true" class="text-xs text-purple-600 font-bold hover:text-purple-700 flex items-center gap-1">
+              + 新增 SOP
+            </button>
           </div>
 
           <!-- 任务列表 -->
           <div class="flex flex-col gap-3">
 
             <!-- 1. 每天背10个单词 (超醒目数字与进度展示) -->
-            <div @click="toggleVocab" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm"
+            <div @click="toggleVocab" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm group"
                  :class="habits.vocab.doneToday ? 'bg-purple-50/80 border-purple-300' : 'bg-white border-gray-100 hover:border-purple-200'">
               <div class="flex items-center gap-3.5">
                 <div class="w-9 h-9 rounded-xl flex items-center justify-center transition"
@@ -351,14 +331,14 @@
                   <!-- 醒目放大的进度词汇 -->
                   <div class="mt-1 flex items-baseline gap-1">
                     <span class="text-xs font-semibold text-gray-500">今日已背:</span>
-                    <span class="text-lg font-black font-mono text-purple-600">{{ habits.vocab.todayCount }}</span>
+                    <span class="text-xl font-black font-mono text-purple-600">{{ habits.vocab.todayCount }}</span>
                     <span class="text-xs font-bold text-gray-400">/ 10 词</span>
                     <span v-if="habits.vocab.doneToday" class="ml-2 text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">已达标 ✨</span>
                   </div>
                 </div>
               </div>
 
-              <!-- 步进按钮 (防止事件冒泡阻断整行点击) -->
+              <!-- 步进按钮 -->
               <div class="flex items-center gap-1.5" @click.stop>
                 <button @click="addVocab(-1)" class="w-8 h-8 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 font-black text-sm hover:bg-gray-100 flex items-center justify-center active:scale-90">-</button>
                 <button @click="addVocab(1)" class="w-8 h-8 rounded-xl bg-study text-white font-black text-sm hover:bg-study-dark flex items-center justify-center shadow active:scale-90">+</button>
@@ -414,106 +394,45 @@
               </span>
             </div>
 
-            <!-- 4. 一周一次类任务集合 (打扫 / 练字 / 视频 / 算账) -->
+            <!-- 4. 每周频次 SOP (打扫 / 练字 / 视频 / 自定义，支持删除) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-
-              <!-- 打扫卫生 -->
-              <div @click="toggleWeeklyHabit('cleaning')" class="p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm"
-                   :class="habits.weekly.cleaning ? 'bg-amber-50/90 border-amber-300' : 'bg-white border-gray-100 hover:border-amber-200'">
-                <div class="flex items-center gap-3">
-                  <div class="w-7 h-7 rounded-xl flex items-center justify-center transition"
-                       :class="habits.weekly.cleaning ? 'bg-life text-white shadow' : 'bg-gray-100 border border-gray-200 text-transparent'">
+              <div v-for="item in weeklySopList" :key="item.id" @click="toggleWeeklySopItem(item.id)" class="p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm group"
+                   :class="item.done ? 'bg-amber-50/90 border-amber-300' : 'bg-white border-gray-100 hover:border-amber-200'">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-7 h-7 rounded-xl flex items-center justify-center transition shrink-0"
+                       :class="item.done ? 'bg-life text-white shadow' : 'bg-gray-100 border border-gray-200 text-transparent'">
                     <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
                   </div>
-                  <div>
-                    <span class="text-xs font-black text-gray-800 block">🧹 一周打扫一次</span>
-                    <span class="text-[10px] font-bold" :class="habits.weekly.cleaning ? 'text-amber-600' : 'text-gray-400'">本周{{ habits.weekly.cleaning ? '已完成' : '待完成' }}</span>
+                  <div class="min-w-0 truncate">
+                    <span class="text-xs font-black text-gray-800 block truncate">{{ item.title }}</span>
+                    <span class="text-[10px] font-bold" :class="item.done ? 'text-amber-600' : 'text-gray-400'">{{ item.category }} · {{ item.done ? '已完成' : '待完成' }}</span>
                   </div>
                 </div>
+                <button @click.stop="deleteWeeklySopItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1 shrink-0" title="删除该 SOP">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
               </div>
-
-              <!-- 一周一练字 -->
-              <div @click="toggleWeeklyHabit('calligraphy')" class="p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm"
-                   :class="habits.weekly.calligraphy ? 'bg-purple-50/90 border-purple-300' : 'bg-white border-gray-100 hover:border-purple-200'">
-                <div class="flex items-center gap-3">
-                  <div class="w-7 h-7 rounded-xl flex items-center justify-center transition"
-                       :class="habits.weekly.calligraphy ? 'bg-study text-white shadow' : 'bg-gray-100 border border-gray-200 text-transparent'">
-                    <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
-                  </div>
-                  <div>
-                    <span class="text-xs font-black text-gray-800 block">✍️ 一周一练字</span>
-                    <span class="text-[10px] font-bold" :class="habits.weekly.calligraphy ? 'text-purple-600' : 'text-gray-400'">本周{{ habits.weekly.calligraphy ? '已完成' : '待完成' }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 一周打视频 -->
-              <div @click="toggleWeeklyHabit('videoCall')" class="p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm"
-                   :class="habits.weekly.videoCall ? 'bg-amber-50/90 border-amber-300' : 'bg-white border-gray-100 hover:border-amber-200'">
-                <div class="flex items-center gap-3">
-                  <div class="w-7 h-7 rounded-xl flex items-center justify-center transition"
-                       :class="habits.weekly.videoCall ? 'bg-life text-white shadow' : 'bg-gray-100 border border-gray-200 text-transparent'">
-                    <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
-                  </div>
-                  <div>
-                    <span class="text-xs font-black text-gray-800 block">📱 一周打视频</span>
-                    <span class="text-[10px] font-bold" :class="habits.weekly.videoCall ? 'text-amber-600' : 'text-gray-400'">本周{{ habits.weekly.videoCall ? '已连线' : '待连线' }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 一周算一次账 -->
-              <div @click="toggleWeeklyHabit('budget')" class="p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm"
-                   :class="habits.weekly.budget ? 'bg-amber-50/90 border-amber-300' : 'bg-white border-gray-100 hover:border-amber-200'">
-                <div class="flex items-center gap-3">
-                  <div class="w-7 h-7 rounded-xl flex items-center justify-center transition"
-                       :class="habits.weekly.budget ? 'bg-life text-white shadow' : 'bg-gray-100 border border-gray-200 text-transparent'">
-                    <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
-                  </div>
-                  <div>
-                    <span class="text-xs font-black text-gray-800 block">📊 一周算一次账</span>
-                    <span class="text-[10px] font-bold" :class="habits.weekly.budget ? 'text-amber-600' : 'text-gray-400'">本周{{ habits.weekly.budget ? '已核算' : '待整理' }}</span>
-                  </div>
-                </div>
-              </div>
-
             </div>
 
-            <!-- 5. 中长周期倒数跟踪 (宝宝洗澡/消毒、剪指甲、剪头发) -->
+            <!-- 5. 中长周期 SOP (宝宝洗澡、剪指甲、剪发、自定义，支持删除) -->
             <div class="p-4 rounded-2xl bg-gray-50/90 border border-gray-100 flex flex-col gap-3">
-              <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">中长期智能周期追踪</span>
-
-              <!-- 两周给宝宝们洗澡/消毒 -->
-              <div class="flex items-center justify-between text-xs">
-                <div>
-                  <span class="font-bold text-gray-700">🧸 两周给宝宝洗澡或消毒</span>
-                  <span class="text-gray-400 block text-[11px] mt-0.5">{{ getIntervalStatus('babyCare', 14).desc }}</span>
-                </div>
-                <button @click="checkInInterval('babyCare')" class="px-3.5 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 shadow-sm active:scale-95">
-                  刚刚完成
-                </button>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">中长期智能周期追踪</span>
               </div>
 
-              <!-- 两周剪一次指甲 -->
-              <div class="flex items-center justify-between text-xs border-t border-gray-200/60 pt-2.5">
-                <div>
-                  <span class="font-bold text-gray-700">💅 两周剪一次指甲</span>
-                  <span class="text-gray-400 block text-[11px] mt-0.5">{{ getIntervalStatus('nails', 14).desc }}</span>
+              <div v-for="(item, idx) in intervalSopList" :key="item.id" class="flex items-center justify-between text-xs group" :class="{ 'border-t border-gray-200/60 pt-2.5': idx > 0 }">
+                <div class="min-w-0 flex-1 pr-2">
+                  <span class="font-bold text-gray-700 block truncate">{{ item.title }}</span>
+                  <span class="text-gray-400 block text-[11px] mt-0.5">{{ getIntervalDesc(item) }}</span>
                 </div>
-                <button @click="checkInInterval('nails')" class="px-3.5 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 shadow-sm active:scale-95">
-                  刚刚完成
-                </button>
-              </div>
-
-              <!-- 两个月剪一次头发 -->
-              <div class="flex items-center justify-between text-xs border-t border-gray-200/60 pt-2.5">
-                <div>
-                  <span class="font-bold text-gray-700">💇‍♀️ 两个月剪一次头发</span>
-                  <span class="text-gray-400 block text-[11px] mt-0.5">{{ getIntervalStatus('haircut', 60).desc }}</span>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <button @click="checkInIntervalItem(item.id)" class="px-3 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 shadow-sm active:scale-95">
+                    刚刚完成
+                  </button>
+                  <button @click="deleteIntervalSopItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1" title="删除该周期项">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
                 </div>
-                <button @click="checkInInterval('haircut')" class="px-3.5 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 shadow-sm active:scale-95">
-                  刚刚完成
-                </button>
               </div>
 
             </div>
@@ -521,18 +440,23 @@
           </div>
         </div>
 
-        <!-- 📝 每日大事 & 产出记录 -->
+        <!-- 📝 每日大事 & 产出记录 (支持日/周/月总结归档) -->
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-              <h2 class="font-black text-gray-800 text-base">今日大事与产出记录</h2>
+              <h2 class="font-black text-gray-800 text-base">大事与产出记录</h2>
             </div>
-            <span class="text-xs text-gray-400 font-medium">每步努力都算数</span>
+            <!-- 视图切换: 今日 / 本周总结 / 本月总结 -->
+            <div class="flex rounded-xl bg-gray-100 p-1 text-[11px] font-bold text-gray-600">
+              <button @click="milestoneView = 'day'" class="px-2.5 py-1 rounded-lg transition" :class="milestoneView === 'day' ? 'bg-white text-purple-700 shadow-sm' : 'hover:text-gray-900'">今日</button>
+              <button @click="milestoneView = 'week'" class="px-2.5 py-1 rounded-lg transition" :class="milestoneView === 'week' ? 'bg-white text-purple-700 shadow-sm' : 'hover:text-gray-900'">周总结</button>
+              <button @click="milestoneView = 'month'" class="px-2.5 py-1 rounded-lg transition" :class="milestoneView === 'month' ? 'bg-white text-purple-700 shadow-sm' : 'hover:text-gray-900'">月总结</button>
+            </div>
           </div>
 
-          <!-- 新增大事输入框 -->
-          <div class="flex gap-2">
+          <!-- 新增大事输入框 (仅在今日视图展示) -->
+          <div v-if="milestoneView === 'day'" class="flex gap-2">
             <select v-model="newMilestone.category" class="text-xs font-bold px-3 py-2.5 rounded-2xl bg-gray-50 border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200">
               <option value="学习">📚 学习</option>
               <option value="生活">☕ 生活</option>
@@ -545,22 +469,28 @@
             </button>
           </div>
 
+          <!-- 总结统计信息条 (周/月模式) -->
+          <div v-else class="p-3 rounded-2xl bg-purple-50/70 border border-purple-100 flex items-center justify-between text-xs text-purple-700 font-bold">
+            <span>{{ milestoneView === 'week' ? '📅 本周大事成就回顾' : '🏆 本月高光产出汇总' }}</span>
+            <span>累计 {{ displayedMilestones.length }} 条大事</span>
+          </div>
+
           <!-- 大事列表流 -->
-          <div class="flex flex-col gap-2.5 max-h-60 overflow-y-auto pr-1">
-            <div v-if="todayMilestones.length === 0" class="text-center py-6 text-xs text-gray-400">
-              今天还没有记录大事，快去完成一件吧 ✨
+          <div class="flex flex-col gap-2.5 max-h-64 overflow-y-auto pr-1">
+            <div v-if="displayedMilestones.length === 0" class="text-center py-6 text-xs text-gray-400">
+              暂无大事记录，快去记录今天的成就吧 ✨
             </div>
-            <div v-for="(item, idx) in todayMilestones" :key="item.id" class="p-3.5 rounded-2xl bg-gray-50/80 border border-gray-100 flex items-start justify-between gap-3 text-xs">
+            <div v-for="item in displayedMilestones" :key="item.id" class="p-3.5 rounded-2xl bg-gray-50/80 border border-gray-100 flex items-start justify-between gap-3 text-xs group">
               <div class="flex items-start gap-2.5">
                 <span class="px-2 py-0.5 rounded-md font-extrabold text-[10px]" :class="getCategoryBadgeClass(item.category)">
                   {{ item.category }}
                 </span>
                 <div>
                   <p class="text-gray-800 font-semibold leading-relaxed">{{ item.text }}</p>
-                  <span class="text-[10px] text-gray-400 font-mono">{{ item.time }}</span>
+                  <span class="text-[10px] text-gray-400 font-mono">{{ item.date ? `${item.date} ` : '' }}{{ item.time }}</span>
                 </div>
               </div>
-              <button @click="deleteMilestone(item.id)" class="text-gray-400 hover:text-red-500 transition p-1">
+              <button @click="deleteMilestone(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1" title="删除该记录">
                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
               </button>
             </div>
@@ -569,40 +499,67 @@
 
       </section>
 
-      <!-- ================= RIGHT COLUMN: 重要日历/生日 + 每周备忘便签 + 每周轻量记账 (3 Cols) ================= -->
+      <!-- ================= RIGHT COLUMN: 完整日历与生日纪念日 + 每周备忘录 (3 Cols) ================= -->
       <section class="lg:col-span-3 flex flex-col gap-6">
 
-        <!-- 📅 重要日子 & 家人生日倒数 -->
+        <!-- 📅 完整月历面板 & 重要日子倒数 -->
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-rose-400"></span>
-              <h2 class="font-black text-gray-800 text-base">重要日子 & 生日</h2>
+              <h2 class="font-black text-gray-800 text-base">日历 & 重要日子</h2>
             </div>
             <button @click="showAddEventModal = true" class="text-xs text-purple-600 font-bold hover:text-purple-700 flex items-center gap-1">
-              + 添加
+              + 纪念日
             </button>
           </div>
 
-          <div class="flex flex-col gap-2.5">
-            <div v-for="evt in specialEvents" :key="evt.id" class="p-3 rounded-2xl border border-gray-100 bg-rose-50/40 flex items-center justify-between text-xs">
-              <div class="flex items-center gap-2.5">
-                <span class="text-base">{{ evt.icon || '🎂' }}</span>
-                <div>
-                  <h4 class="font-bold text-gray-800">{{ evt.name }}</h4>
+          <!-- 小型可视化月历 -->
+          <div class="bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 flex flex-col gap-2 text-xs">
+            <div class="flex items-center justify-between font-black text-gray-700">
+              <span>{{ calendarYear }}年 {{ calendarMonth + 1 }}月</span>
+              <div class="flex gap-1 text-gray-400">
+                <button @click="changeMonth(-1)" class="p-1 hover:text-gray-700">◀</button>
+                <button @click="changeMonth(1)" class="p-1 hover:text-gray-700">▶</button>
+              </div>
+            </div>
+            <!-- 星期表头 -->
+            <div class="grid grid-cols-7 gap-1 text-center font-bold text-[10px] text-gray-400">
+              <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+            </div>
+            <!-- 日期网格 -->
+            <div class="grid grid-cols-7 gap-1 text-center font-mono text-xs">
+              <div v-for="d in calendarDays" :key="d.key" class="py-1 rounded-lg transition"
+                   :class="d.isCurrentMonth ? (d.isToday ? 'bg-purple-600 text-white font-black shadow-sm' : (d.hasEvent ? 'bg-rose-100 text-rose-700 font-bold' : 'text-gray-700 hover:bg-gray-200/60')) : 'text-gray-300'">
+                {{ d.day }}
+              </div>
+            </div>
+          </div>
+
+          <!-- 重要日子倒数列表 (支持删除) -->
+          <div class="flex flex-col gap-2.5 max-h-56 overflow-y-auto pr-1">
+            <div v-if="specialEvents.length === 0" class="text-center py-4 text-xs text-gray-400">暂无重要日子</div>
+            <div v-for="evt in specialEvents" :key="evt.id" class="p-3 rounded-2xl border border-gray-100 bg-rose-50/40 flex items-center justify-between text-xs group">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="text-base shrink-0">{{ evt.icon || '🎂' }}</span>
+                <div class="min-w-0 truncate">
+                  <h4 class="font-bold text-gray-800 truncate">{{ evt.name }}</h4>
                   <span class="text-[10px] text-gray-400">{{ evt.date }}</span>
                 </div>
               </div>
-              <div class="text-right">
+              <div class="flex items-center gap-2 shrink-0">
                 <span class="text-xs font-black text-rose-500">
                   {{ getDaysUntil(evt.date) === 0 ? '🎉 就是今天!' : `还有 ${getDaysUntil(evt.date)} 天` }}
                 </span>
+                <button @click="deleteSpecialEvent(evt.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1" title="删除该纪念日">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 📌 每周可视化备忘录 (随时删改) -->
+        <!-- 📌 每周可视化备忘录 (支持任意增删改) -->
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -622,10 +579,10 @@
               <div class="flex items-center justify-between">
                 <span class="font-bold text-gray-800">{{ memo.title }}</span>
                 <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition">
-                  <button @click="editMemo(memo)" class="p-1 hover:text-purple-700 text-gray-500">
+                  <button @click="editMemo(memo)" class="p-1 hover:text-purple-700 text-gray-500" title="编辑">
                     <i data-lucide="edit-3" class="w-3 h-3"></i>
                   </button>
-                  <button @click="deleteMemo(memo.id)" class="p-1 hover:text-red-600 text-gray-500">
+                  <button @click="deleteMemo(memo.id)" class="p-1 hover:text-red-600 text-gray-500" title="删除">
                     <i data-lucide="trash-2" class="w-3 h-3"></i>
                   </button>
                 </div>
@@ -635,40 +592,11 @@
           </div>
         </div>
 
-        <!-- 💰 每周轻量记账总览 (每周算一次账) -->
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-              <h2 class="font-black text-gray-800 text-base">本周记账简报</h2>
-            </div>
-            <span class="text-xs text-emerald-600 font-black font-mono">¥{{ weeklyTotalExpense }}</span>
-          </div>
-
-          <div class="flex gap-2">
-            <input v-model="newExpense.title" type="text" placeholder="账目说明" class="flex-1 text-xs px-3 py-2 rounded-2xl bg-gray-50 border border-gray-200">
-            <input v-model.number="newExpense.amount" type="number" placeholder="¥金额" class="w-20 text-xs px-2.5 py-2 rounded-2xl bg-gray-50 border border-gray-200 font-mono">
-            <button @click="addExpense" class="px-3.5 py-2 bg-emerald-600 text-white font-bold text-xs rounded-2xl hover:bg-emerald-700 active:scale-95 shadow-sm">
-              记下
-            </button>
-          </div>
-
-          <div class="flex flex-col gap-1.5 max-h-36 overflow-y-auto">
-            <div v-for="item in weeklyExpenses" :key="item.id" class="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-xl bg-gray-50/80">
-              <span class="text-gray-700 font-medium">{{ item.title }}</span>
-              <div class="flex items-center gap-2">
-                <span class="font-black text-emerald-600 font-mono">¥{{ item.amount }}</span>
-                <button @click="deleteExpense(item.id)" class="text-gray-300 hover:text-red-500">×</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </section>
 
     </main>
 
-    <!-- ================= 🐶 页面右下角悬浮互动桌面宠物挂件 (Desktop Pet Widget) ================= -->
+    <!-- ================= 🐶 页面右下角悬浮互动桌面宠物 (6大肢体动作引擎) ================= -->
     <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end pointer-events-none select-none">
       <!-- 气泡对话框 (点击时弹出) -->
       <div v-if="petDialogue" class="mb-2 px-3.5 py-2 rounded-2xl bg-white/95 backdrop-blur shadow-lg border border-purple-100 text-xs font-bold text-gray-800 flex items-center gap-1.5 animate-bounce pointer-events-auto">
@@ -676,12 +604,49 @@
       </div>
 
       <!-- 可点击交互小狗主体 -->
-      <div @click="triggerPetAction" class="w-24 h-24 sm:w-28 sm:h-28 bg-white/90 backdrop-blur-md rounded-3xl p-1.5 shadow-2xl border-2 border-purple-200 flex items-center justify-center cursor-pointer pointer-events-auto group hover:scale-105 active:scale-95 transition-transform" title="点击戳我：扭屁股/跳跃/压扁/转圈">
+      <div @click="triggerPetAction" class="w-24 h-24 sm:w-28 sm:h-28 bg-white/90 backdrop-blur-md rounded-3xl p-1.5 shadow-2xl border-2 border-purple-200 flex items-center justify-center cursor-pointer pointer-events-auto group hover:scale-105 active:scale-95 transition-transform" title="点击戳我：扭屁股/跳跃/压扁/转圈/害羞/点头">
         <img :src="currentPetImg" alt="Interactive Desktop Pet" class="w-full h-full object-contain filter drop-shadow" :class="petAnimClass">
         <!-- 动作标签提示 -->
         <span class="absolute -top-2 -left-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">
           {{ currentActionName }}
         </span>
+      </div>
+    </div>
+
+    <!-- Modal: 新增生活 SOP (支持任意类别/频次) -->
+    <div v-if="showAddSopModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col gap-4">
+        <h3 class="font-black text-gray-800 text-base">新增生活 SOP 周期项</h3>
+        <div class="flex flex-col gap-3 text-xs">
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">SOP 名称</label>
+            <input v-model="newSopForm.title" type="text" placeholder="例如: 每周阅读一本书 / 每月大扫除" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">所属维度</label>
+            <select v-model="newSopForm.category" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 font-bold">
+              <option value="学习">📚 学习 (Study)</option>
+              <option value="生活">☕ 生活 (Life)</option>
+              <option value="健康">🌿 健康 (Health)</option>
+              <option value="变美">🌸 变美 (Beauty)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">周期类型</label>
+            <select v-model="newSopForm.type" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 font-bold">
+              <option value="weekly">每周 1 次频次打卡</option>
+              <option value="interval">天数间隔倒数 (如14天/30天/60天)</option>
+            </select>
+          </div>
+          <div v-if="newSopForm.type === 'interval'">
+            <label class="block font-semibold text-gray-600 mb-1">间隔天数 (天)</label>
+            <input v-model.number="newSopForm.intervalDays" type="number" placeholder="例如: 14 或 30" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 font-mono">
+          </div>
+        </div>
+        <div class="flex gap-2 justify-end mt-2">
+          <button @click="showAddSopModal = false" class="px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-xl">取消</button>
+          <button @click="saveNewSop" class="px-4 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-xl">添加 SOP</button>
+        </div>
       </div>
     </div>
 
@@ -745,7 +710,7 @@
 
     createApp({
       setup() {
-        const STORAGE_KEY = 'LIFE_PET_APP_DATA_V3';
+        const STORAGE_KEY = 'LIFE_PET_APP_DATA_V4';
 
         // 默认初始化数据
         const getDefaultData = () => ({
@@ -753,14 +718,20 @@
           habits: {
             vocab: { todayCount: 0, doneToday: false },
             workout: { weekCount: 0, doneToday: false, lastDate: null },
-            weekly: { cleaning: false, calligraphy: false, videoCall: false, budget: false },
             intervals: {
-              mask: { lastDate: null },
-              babyCare: { lastDate: null },
-              nails: { lastDate: null },
-              haircut: { lastDate: null }
+              mask: { lastDate: null }
             }
           },
+          weeklySopList: [
+            { id: 1, title: '🧹 一周打扫一次', category: '生活', done: false },
+            { id: 2, title: '✍️ 一周一练字', category: '学习', done: false },
+            { id: 3, title: '📱 一周打视频', category: '生活', done: false }
+          ],
+          intervalSopList: [
+            { id: 1, title: '🧸 两周给宝宝洗澡或消毒', days: 14, lastDate: null },
+            { id: 2, title: '💅 两周剪一次指甲', days: 14, lastDate: null },
+            { id: 3, title: '💇‍♀️ 两个月剪一次头发', days: 60, lastDate: null }
+          ],
           milestones: [],
           specialEvents: [
             { id: 1, name: '妈妈生日', date: '08-30', icon: '🎂' },
@@ -768,8 +739,7 @@
           ],
           weeklyMemos: [
             { id: 1, title: '周三提醒', content: '去菜鸟驿站拿生鲜包裹', bgColor: '#FEF3C7', borderColor: '#FDE68A' }
-          ],
-          weeklyExpenses: []
+          ]
         });
 
         const loadSavedData = () => {
@@ -793,7 +763,7 @@
         const daysOfWeek = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
         const currentDateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${daysOfWeek[now.getDay()]}`;
 
-        // 🐶 真实玩偶透明图片与 4 种轮流互动动效引擎
+        // 🐶 真实玩偶透明图片与 6 种更生动的肢体动作引擎
         const IMG_FRONT = './pet_front.png';
         const IMG_BACK = './pet_back.png';
 
@@ -813,7 +783,7 @@
             dialogue: '看我的无敌圆滚滚屁股扭扭！'
           },
           {
-            name: '开心跳跃 🐾',
+            name: '开心起跳 🐾',
             class: 'anim-jump',
             img: IMG_FRONT,
             dialogue: '哇！今天感觉浑身都是力气！'
@@ -825,10 +795,22 @@
             dialogue: '哎呀呀被你捏扁了~ 弹回来啦！'
           },
           {
-            name: '炫酷转圈 💫',
+            name: '快乐转圈 💫',
             class: 'anim-spin',
             img: IMG_FRONT,
             dialogue: '爱的魔力转圈圈~ 呼呼！'
+          },
+          {
+            name: '害羞晃脑 💕',
+            class: 'anim-shy',
+            img: IMG_FRONT,
+            dialogue: '嘿嘿，被主人夸奖有点不好意思呢~'
+          },
+          {
+            name: '点赞点头 🌟',
+            class: 'anim-nod',
+            img: IMG_FRONT,
+            dialogue: '对对对！今天的目标一定能全部搞定！'
           }
         ];
 
@@ -844,7 +826,6 @@
           actionBadgeText.value = action.name;
           currentActionName.value = action.name;
 
-          // 触发轻量小彩屑
           try { confetti({ particleCount: 35, spread: 50, origin: { x: 0.9, y: 0.9 } }); } catch(e){}
 
           actionTimeout = setTimeout(() => {
@@ -855,7 +836,7 @@
           }, 1200);
         };
 
-        // 计时器相关
+        // ⏱️ 计时器逻辑
         const timerSeconds = ref(0);
         const timerRunning = ref(false);
         let timerInterval = null;
@@ -893,7 +874,7 @@
           return `${h} 小时`;
         };
 
-        // 宠物语录计算
+        // 宠物语录
         const petMood = computed(() => {
           if (state.value.todayStudySeconds >= 7200) return '超开心 🌟';
           if (timerRunning.value) return '认真陪伴中 🐾';
@@ -906,8 +887,10 @@
           return '记得隔天敷面膜、每天背背单词，生活规律的你最漂亮啦！';
         });
 
-        // 习惯打卡
+        // 习惯打卡与 SOP
         const habits = computed(() => state.value.habits);
+        const weeklySopList = computed(() => state.value.weeklySopList || []);
+        const intervalSopList = computed(() => state.value.intervalSopList || []);
 
         const toggleVocab = () => {
           habits.value.vocab.doneToday = !habits.value.vocab.doneToday;
@@ -967,92 +950,152 @@
           }
         };
 
-        const toggleWeeklyHabit = (key) => {
-          habits.value.weekly[key] = !habits.value.weekly[key];
-          if (habits.value.weekly[key]) {
-            try { confetti({ particleCount: 40, spread: 40, origin: { y: 0.7 } }); } catch(e){}
+        const toggleWeeklySopItem = (id) => {
+          const item = state.value.weeklySopList.find(x => x.id === id);
+          if (item) {
+            item.done = !item.done;
+            if (item.done) {
+              try { confetti({ particleCount: 40, spread: 40, origin: { y: 0.7 } }); } catch(e){}
+            }
           }
         };
 
-        const getIntervalStatus = (key, cycleDays) => {
-          const item = state.value.habits.intervals[key];
-          if (!item || !item.lastDate) return { desc: '尚未记录，点击右侧刚刚完成进行更新' };
+        const deleteWeeklySopItem = (id) => {
+          state.value.weeklySopList = state.value.weeklySopList.filter(x => x.id !== id);
+        };
+
+        const getIntervalDesc = (item) => {
+          if (!item.lastDate) return `每 ${item.days} 天一次 · 尚未记录`;
           const last = new Date(item.lastDate);
           const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
           const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
-          const remain = cycleDays - diffDays;
-
-          if (remain <= 0) {
-            return { desc: `已达周期 (上次: ${item.lastDate})，建议尽快安排` };
-          }
-          return { desc: `上次: ${item.lastDate} · 预计还剩 ${remain} 天` };
+          const remain = item.days - diffDays;
+          if (remain <= 0) return `已达周期 (上次: ${item.lastDate})，建议尽快安排`;
+          return `上次: ${item.lastDate} · 预计还剩 ${remain} 天`;
         };
 
-        const checkInInterval = (key) => {
-          const todayStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
-          state.value.habits.intervals[key].lastDate = todayStr;
-          try { confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } }); } catch(e){}
+        const checkInIntervalItem = (id) => {
+          const item = state.value.intervalSopList.find(x => x.id === id);
+          if (item) {
+            const todayStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
+            item.lastDate = todayStr;
+            try { confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } }); } catch(e){}
+          }
+        };
+
+        const deleteIntervalSopItem = (id) => {
+          state.value.intervalSopList = state.value.intervalSopList.filter(x => x.id !== id);
+        };
+
+        // 新增 SOP 模态框
+        const showAddSopModal = ref(false);
+        const newSopForm = ref({ title: '', category: '生活', type: 'weekly', intervalDays: 14 });
+
+        const saveNewSop = () => {
+          if (!newSopForm.value.title.trim()) return;
+          if (newSopForm.value.type === 'weekly') {
+            state.value.weeklySopList.push({
+              id: Date.now(),
+              title: newSopForm.value.title.trim(),
+              category: newSopForm.value.category,
+              done: false
+            });
+          } else {
+            state.value.intervalSopList.push({
+              id: Date.now(),
+              title: newSopForm.value.title.trim(),
+              days: Number(newSopForm.value.intervalDays) || 14,
+              lastDate: null
+            });
+          }
+          newSopForm.value = { title: '', category: '生活', type: 'weekly', intervalDays: 14 };
+          showAddSopModal.value = false;
         };
 
         // 今日完成度百分比
         const todayProgressPercent = computed(() => {
-          let total = 4;
+          let total = 3 + (state.value.weeklySopList || []).length;
           let done = 0;
           if (habits.value.vocab.doneToday) done++;
           if (maskStatus.value.completedToday || !maskStatus.value.dueToday) done++;
           if (habits.value.workout.doneToday) done++;
-          if (state.value.todayStudySeconds >= 3600) done++;
-          return Math.round((done / total) * 100);
+          (state.value.weeklySopList || []).forEach(x => { if (x.done) done++; });
+          return total > 0 ? Math.round((done / total) * 100) : 0;
         });
 
-        // 四大维度统计
-        const stats = computed(() => {
-          let studyScore = 0;
-          if (habits.value.vocab.doneToday) studyScore += 35;
-          if (habits.value.weekly.calligraphy) studyScore += 35;
-          if (state.value.todayStudySeconds > 0) {
-            studyScore += Math.min(30, Math.round((state.value.todayStudySeconds / 7200) * 30));
-          }
+        // 饼状图实时统计
+        const pieStats = computed(() => {
+          let study = 0;
+          if (habits.value.vocab.doneToday) study += 30;
+          if (state.value.todayStudySeconds > 0) study += Math.min(40, Math.round((state.value.todayStudySeconds / 7200) * 40));
 
-          const healthDone = (habits.value.workout.doneToday ? 1 : 0) + (habits.value.intervals.babyCare.lastDate ? 1 : 0);
-          const healthTotal = 2;
-          const healthPct = habits.value.workout.doneToday ? 100 : (habits.value.workout.weekCount > 0 ? 50 : 0);
+          let health = habits.value.workout.doneToday ? 60 : (habits.value.workout.weekCount > 0 ? 30 : 10);
+          let beauty = maskStatus.value.completedToday ? 80 : (maskStatus.value.dueToday ? 20 : 50);
 
-          let beautyDone = 0;
-          if (maskStatus.value.completedToday) beautyDone++;
-          if (habits.value.intervals.nails.lastDate) beautyDone++;
-          if (habits.value.intervals.haircut.lastDate) beautyDone++;
-          const beautyPct = maskStatus.value.completedToday ? 100 : (maskStatus.value.dueToday ? 20 : 70);
+          let lifeDone = (state.value.weeklySopList || []).filter(x => x.done).length;
+          let life = Math.round((lifeDone / Math.max(1, (state.value.weeklySopList || []).length)) * 100);
 
-          const lifeKeys = ['cleaning', 'videoCall', 'budget'];
-          const lifeDone = lifeKeys.filter(k => habits.value.weekly[k]).length;
-          const lifePct = Math.round((lifeDone / lifeKeys.length) * 100);
-
+          const total = Math.max(1, study + health + beauty + life);
           return {
-            studyPercent: Math.min(100, studyScore),
-            healthDoneCount: healthDone,
-            healthTotalCount: healthTotal,
-            healthPercent: healthPct,
-            beautyDoneCount: beautyDone,
-            beautyTotalCount: 3,
-            beautyPercent: beautyPct,
-            lifeDoneCount: lifeDone,
-            lifeTotalCount: lifeKeys.length,
-            lifePercent: lifePct
+            study: Math.round((study / total) * 100),
+            health: Math.round((health / total) * 100),
+            beauty: Math.round((beauty / total) * 100),
+            life: Math.round((life / total) * 100)
           };
         });
 
-        // 每日大事
-        const todayMilestones = computed(() => state.value.milestones || []);
+        let chartInstance = null;
+        const updateChart = () => {
+          const ctx = document.getElementById('energyPieChart');
+          if (!ctx) return;
+          const data = [pieStats.value.study, pieStats.value.health, pieStats.value.beauty, pieStats.value.life];
+
+          if (chartInstance) {
+            chartInstance.data.datasets[0].data = data;
+            chartInstance.update();
+          } else {
+            chartInstance = new Chart(ctx, {
+              type: 'doughnut',
+              data: {
+                labels: ['学习', '健康', '变美', '生活'],
+                datasets: [{
+                  data: data,
+                  backgroundColor: ['#8B5CF6', '#10B981', '#EC4899', '#F59E0B'],
+                  borderWidth: 2,
+                  borderColor: '#FFFFFF',
+                  hoverOffset: 4
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    callbacks: {
+                      label: (ctx) => ` ${ctx.label}: ${ctx.raw}%`
+                    }
+                  }
+                },
+                cutout: '62%'
+              }
+            });
+          }
+        };
+
+        // 每日大事与周/月总结
+        const milestoneView = ref('day'); // 'day' | 'week' | 'month'
         const newMilestone = ref({ category: '学习', text: '' });
 
         const addMilestone = () => {
           if (!newMilestone.value.text.trim()) return;
+          const todayDateStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
           const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
           state.value.milestones.unshift({
             id: Date.now(),
             category: newMilestone.value.category,
             text: newMilestone.value.text.trim(),
+            date: todayDateStr,
             time: timeStr
           });
           newMilestone.value.text = '';
@@ -1062,6 +1105,26 @@
         const deleteMilestone = (id) => {
           state.value.milestones = state.value.milestones.filter(m => m.id !== id);
         };
+
+        const displayedMilestones = computed(() => {
+          const list = state.value.milestones || [];
+          const todayDateStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
+
+          if (milestoneView.value === 'day') {
+            return list.filter(x => !x.date || x.date === todayDateStr);
+          } else if (milestoneView.value === 'week') {
+            // 最近 7 天
+            const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            return list.filter(x => {
+              if (!x.date) return true;
+              return new Date(x.date) >= sevenDaysAgo;
+            });
+          } else {
+            // 本月
+            const currentMonthStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}`;
+            return list.filter(x => !x.date || x.date.startsWith(currentMonthStr));
+          }
+        });
 
         const getCategoryBadgeClass = (cat) => {
           switch(cat) {
@@ -1073,10 +1136,52 @@
           }
         };
 
-        // 重要日子 & 生日
+        // 📅 日历算法与重要日子
+        const calendarYear = ref(now.getFullYear());
+        const calendarMonth = ref(now.getMonth());
         const specialEvents = computed(() => state.value.specialEvents || []);
         const showAddEventModal = ref(false);
         const newEvent = ref({ name: '', date: '', icon: '🎂' });
+
+        const changeMonth = (delta) => {
+          let m = calendarMonth.value + delta;
+          if (m < 0) {
+            calendarMonth.value = 11;
+            calendarYear.value--;
+          } else if (m > 11) {
+            calendarMonth.value = 0;
+            calendarYear.value++;
+          } else {
+            calendarMonth.value = m;
+          }
+        };
+
+        const calendarDays = computed(() => {
+          const y = calendarYear.value;
+          const m = calendarMonth.value;
+          const firstDay = new Date(y, m, 1).getDay();
+          const totalDays = new Date(y, m + 1, 0).getDate();
+          const prevTotalDays = new Date(y, m, 0).getDate();
+
+          const days = [];
+          // 上个月占位
+          for (let i = firstDay - 1; i >= 0; i--) {
+            days.push({ day: prevTotalDays - i, isCurrentMonth: false, key: `prev-${i}` });
+          }
+          // 当前月
+          for (let i = 1; i <= totalDays; i++) {
+            const dateStr = `${(m + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
+            const isToday = (y === now.getFullYear() && m === now.getMonth() && i === now.getDate());
+            const hasEvent = specialEvents.value.some(e => e.date.endsWith(dateStr));
+            days.push({ day: i, isCurrentMonth: true, isToday, hasEvent, key: `curr-${i}` });
+          }
+          // 下个月补齐
+          const remain = 42 - days.length;
+          for (let i = 1; i <= remain; i++) {
+            days.push({ day: i, isCurrentMonth: false, key: `next-${i}` });
+          }
+          return days;
+        });
 
         const getDaysUntil = (dateStr) => {
           let parts = dateStr.split('-');
@@ -1100,6 +1205,10 @@
           });
           newEvent.value = { name: '', date: '', icon: '🎂' };
           showAddEventModal.value = false;
+        };
+
+        const deleteSpecialEvent = (id) => {
+          state.value.specialEvents = state.value.specialEvents.filter(x => x.id !== id);
         };
 
         // 每周备忘录
@@ -1143,31 +1252,7 @@
           state.value.weeklyMemos = state.value.weeklyMemos.filter(m => m.id !== id);
         };
 
-        // 每周记账
-        const weeklyExpenses = computed(() => state.value.weeklyExpenses || []);
-        const newExpense = ref({ title: '', amount: null });
-
-        const weeklyTotalExpense = computed(() => {
-          return (state.value.weeklyExpenses || []).reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
-        });
-
-        const addExpense = () => {
-          if (!newExpense.value.title.trim() || !newExpense.value.amount) return;
-          state.value.weeklyExpenses.unshift({
-            id: Date.now(),
-            title: newExpense.value.title.trim(),
-            amount: Number(newExpense.value.amount)
-          });
-          newExpense.value = { title: '', amount: null };
-          state.value.habits.weekly.budget = true;
-          try { confetti({ particleCount: 40, spread: 45, origin: { y: 0.8 } }); } catch(e){}
-        };
-
-        const deleteExpense = (id) => {
-          state.value.weeklyExpenses = state.value.weeklyExpenses.filter(e => e.id !== id);
-        };
-
-        // 数据导出导入
+        // 数据备份恢复
         const exportData = () => {
           const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.value, null, 2));
           const downloadAnchor = document.createElement('a');
@@ -1194,33 +1279,15 @@
           reader.readAsText(file);
         };
 
-        // PWA 安装事件监听
-        const deferredPrompt = ref(null);
-        window.addEventListener('beforeinstallprompt', (e) => {
-          e.preventDefault();
-          deferredPrompt.value = e;
-        });
-
-        const installPWA = async () => {
-          if (!deferredPrompt.value) return;
-          deferredPrompt.value.prompt();
-          const { outcome } = await deferredPrompt.value.userChoice;
-          if (outcome === 'accepted') {
-            deferredPrompt.value = null;
-          }
-        };
-
         onMounted(() => {
-          // 注册 Service Worker
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW fail:', err));
-          }
           try { lucide.createIcons(); } catch(e){}
+          updateChart();
         });
 
-        watch(state, () => {
+        watch([pieStats, state], () => {
           setTimeout(() => {
             try { lucide.createIcons(); } catch(e){}
+            updateChart();
           }, 50);
         }, { deep: true });
 
@@ -1243,26 +1310,39 @@
           petMood,
           petQuote,
           habits,
+          weeklySopList,
+          intervalSopList,
           toggleVocab,
           addVocab,
           maskStatus,
           checkInHabit,
           toggleWorkoutToday,
-          toggleWeeklyHabit,
-          getIntervalStatus,
-          checkInInterval,
+          toggleWeeklySopItem,
+          deleteWeeklySopItem,
+          getIntervalDesc,
+          checkInIntervalItem,
+          deleteIntervalSopItem,
+          showAddSopModal,
+          newSopForm,
+          saveNewSop,
           todayProgressPercent,
-          stats,
-          todayMilestones,
+          pieStats,
+          milestoneView,
           newMilestone,
           addMilestone,
           deleteMilestone,
+          displayedMilestones,
           getCategoryBadgeClass,
+          calendarYear,
+          calendarMonth,
+          calendarDays,
+          changeMonth,
           specialEvents,
           showAddEventModal,
           newEvent,
           getDaysUntil,
           saveNewEvent,
+          deleteSpecialEvent,
           weeklyMemos,
           showAddMemoModal,
           editingMemoId,
@@ -1271,11 +1351,6 @@
           editMemo,
           saveMemo,
           deleteMemo,
-          weeklyExpenses,
-          newExpense,
-          weeklyTotalExpense,
-          addExpense,
-          deleteExpense,
           exportData,
           importData
         };

@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>治愈小铺 · 生活陪伴工作台</title>
+  <!-- iOS PWA 体验专项支持 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="治愈小铺">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#8B5CF6">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Vue 3 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti for Celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans SC"', '"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            study: { light: '#EDE9FE', DEFAULT: '#8B5CF6', dark: '#6D28D9' },
+            life: { light: '#FEF3C7', DEFAULT: '#F59E0B', dark: '#D97706' },
+            health: { light: '#D1FAE5', DEFAULT: '#10B981', dark: '#047857' },
+            beauty: { light: '#FCE7F3', DEFAULT: '#EC4899', dark: '#BE185D' },
+            bgcream: '#FAF8F5',
+            cardbg: '#FFFFFF'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FAF8F5;
+      color: #374151;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* 基础待机悬浮呼吸 */
+    @keyframes pet-idle {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(1.5deg); }
+    }
+    .pet-idle {
+      animation: pet-idle 3.5s ease-in-out infinite;
+    }
+
+    /* 1. 扭屁股 (转到背面左右摇摆) */
+    @keyframes wiggle-butt {
+      0% { transform: scale(1) rotate(0deg); }
+      20% { transform: scale(1.05) rotate(-12deg) translateX(-4px); }
+      40% { transform: scale(1.05) rotate(12deg) translateX(4px); }
+      60% { transform: scale(1.05) rotate(-10deg) translateX(-3px); }
+      80% { transform: scale(1.05) rotate(10deg) translateX(3px); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    .anim-wiggle {
+      animation: wiggle-butt 1.2s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+
+    /* 2. 欢快跳跃 */
+    @keyframes pet-jump {
+      0% { transform: translateY(0) scale(1, 1); }
+      25% { transform: translateY(4px) scale(1.15, 0.85); }
+      50% { transform: translateY(-32px) scale(0.9, 1.15) rotate(-3deg); }
+      75% { transform: translateY(-16px) scale(1.05, 0.95) rotate(3deg); }
+      90% { transform: translateY(2px) scale(1.08, 0.92); }
+      100% { transform: translateY(0) scale(1, 1); }
+    }
+    .anim-jump {
+      animation: pet-jump 0.9s ease-in-out;
+    }
+
+    /* 3. 压扁回弹 (果冻弹性) */
+    @keyframes pet-squish {
+      0% { transform: scale(1, 1); }
+      20% { transform: scale(1.35, 0.65) translateY(12px); }
+      45% { transform: scale(0.8, 1.25) translateY(-14px); }
+      65% { transform: scale(1.15, 0.9) translateY(4px); }
+      80% { transform: scale(0.95, 1.05) translateY(-2px); }
+      100% { transform: scale(1, 1) translateY(0); }
+    }
+    .anim-squish {
+      animation: pet-squish 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* 4. 快乐转圈圈 360° */
+    @keyframes pet-spin {
+      0% { transform: rotate(0deg) scale(1); }
+      40% { transform: rotate(180deg) scale(1.2) translateY(-15px); }
+      80% { transform: rotate(360deg) scale(1.1) translateY(-4px); }
+      100% { transform: rotate(360deg) scale(1) translateY(0); }
+    }
+    .anim-spin {
+      animation: pet-spin 0.95s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 计时器呼吸光晕 */
+    @keyframes neon-pulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.15), inset 0 0 15px rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.4); }
+      50% { box-shadow: 0 0 35px rgba(236, 72, 153, 0.3), inset 0 0 25px rgba(236, 72, 153, 0.15); border-color: rgba(236, 72, 153, 0.6); }
+    }
+    .timer-active-glow {
+      animation: neon-pulse 3s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-purple-200 relative pb-28 sm:pb-12">
+  <div id="app" class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 flex flex-col gap-6">
+
+    <!-- Header / Top Bar -->
+    <header class="flex items-center justify-between bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100/80">
+      <div class="flex items-center gap-3.5">
+        <div @click="triggerPetAction" class="w-12 h-12 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center border border-purple-100 shadow-sm cursor-pointer active:scale-95 transition" title="点击和小狗互动">
+          <img :src="currentPetImg" alt="Pet Mascot" class="w-10 h-10 object-contain" :class="petAnimClass">
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 bg-clip-text text-transparent flex items-center gap-2">
+            治愈小铺 · 陪伴工作台
+          </h1>
+          <p class="text-xs sm:text-sm text-gray-400 font-medium">
+            {{ currentDateStr }} · 每一个自律的小瞬间，都会让生活更可爱 🌸
+          </p>
+        </div>
+      </div>
+
+      <!-- Backup & Restore Actions -->
+      <div class="flex items-center gap-2">
+        <button @click="exportData" class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-2xl transition border border-gray-200 shadow-sm active:scale-95" title="备份数据到本地">
+          <i data-lucide="download" class="w-3.5 h-3.5 text-gray-500"></i>
+          <span class="hidden sm:inline">备份</span>
+        </button>
+        <label class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-2xl transition border border-gray-200 shadow-sm cursor-pointer active:scale-95" title="从文件恢复数据">
+          <i data-lucide="upload" class="w-3.5 h-3.5 text-gray-500"></i>
+          <span class="hidden sm:inline">导入</span>
+          <input type="file" @change="importData" accept=".json" class="hidden">
+        </label>
+      </div>
+    </header>
+
+    <!-- Main Grid Dashboard -->
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start flex-1">
+
+      <!-- ================= LEFT COLUMN: 萌宠看板 + 美化学习计时器 + 四维度实时分析 (4 Cols) ================= -->
+      <section class="lg:col-span-4 flex flex-col gap-6">
+
+        <!-- 🐶 萌宠互动大看板 (点击互动) -->
+        <div @click="triggerPetAction" class="bg-gradient-to-br from-purple-50/90 via-pink-50/70 to-amber-50/80 rounded-3xl p-6 shadow-sm border border-purple-100/70 relative overflow-hidden cursor-pointer group select-none transition hover:shadow-md">
+          <div class="flex items-center gap-4">
+            <div class="w-24 h-24 bg-white/90 rounded-3xl p-1.5 shadow-sm flex items-center justify-center shrink-0 border border-white relative overflow-hidden">
+              <img :src="currentPetImg" alt="Pet Plush Mascot" class="w-full h-full object-contain" :class="petAnimClass">
+              <div v-if="actionBadgeText" class="absolute bottom-1 px-1.5 py-0.5 rounded-full bg-purple-600 text-[9px] font-black text-white shadow animate-bounce">
+                {{ actionBadgeText }}
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white text-purple-700 mb-1.5 shadow-sm border border-purple-100">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>{{ petMood }}</span>
+                <span class="text-[10px] text-gray-400 font-normal ml-1">· 点击戳我 🐾</span>
+              </div>
+              <p class="text-xs sm:text-sm font-bold text-gray-700 leading-snug">
+                "{{ petQuote }}"
+              </p>
+            </div>
+          </div>
+
+          <!-- 今日完成度进度条 -->
+          <div class="mt-5 pt-4 border-t border-purple-100/80">
+            <div class="flex justify-between items-center text-xs text-gray-600 font-bold mb-1.5">
+              <span>今日综合打卡完成度</span>
+              <span class="text-purple-600 font-black text-sm">{{ todayProgressPercent }}%</span>
+            </div>
+            <div class="w-full bg-white rounded-full h-3 overflow-hidden p-0.5 border border-purple-100 shadow-inner">
+              <div class="bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 h-full rounded-full transition-all duration-700" :style="{ width: todayProgressPercent + '%' }"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⏱️ 美化高颜值专注学习计时器 -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center">
+          <div class="w-full flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-study"></span>
+              <h2 class="font-black text-gray-800 text-base">学习专注计时</h2>
+            </div>
+            <div class="flex items-center gap-1.5 bg-study-light px-3 py-1 rounded-xl">
+              <span class="text-xs text-study-dark font-bold">今日累计:</span>
+              <span class="text-xs text-study-dark font-black font-mono">{{ formatHours(todayStudySeconds) }}</span>
+            </div>
+          </div>
+
+          <!-- 艺术感计时圆盘 -->
+          <div class="my-5 relative flex items-center justify-center">
+            <div class="w-52 h-52 rounded-full border-2 border-dashed border-purple-200 flex items-center justify-center bg-gradient-to-br from-purple-50/50 via-white to-pink-50/30 shadow-inner transition-all duration-500"
+                 :class="{ 'timer-active-glow border-solid border-purple-400': timerRunning }">
+
+              <div class="flex flex-col items-center justify-center text-center">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-purple-400 mb-1">
+                  {{ timerRunning ? 'FOCUSING' : 'READY TO STUDY' }}
+                </span>
+                <span class="text-3xl sm:text-4xl font-black font-mono tracking-tight text-gray-800">
+                  {{ formatTimer(timerSeconds) }}
+                </span>
+                <span class="text-[11px] text-gray-400 font-semibold mt-2 px-3 py-0.5 rounded-full bg-gray-50 border border-gray-100">
+                  {{ timerRunning ? '🔥 深度心流沉浸中...' : '点击下方开始记录' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 计时器控制按键 -->
+          <div class="flex items-center gap-3 w-full mt-2">
+            <button v-if="!timerRunning" @click="startTimer" class="flex-1 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-purple-200 hover:from-purple-700 hover:to-indigo-700 transition flex items-center justify-center gap-2 active:scale-95">
+              <i data-lucide="play" class="w-4 h-4 fill-white"></i> 开始专注
+            </button>
+            <button v-else @click="pauseTimer" class="flex-1 py-3.5 bg-amber-500 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-amber-200 hover:bg-amber-600 transition flex items-center justify-center gap-2 active:scale-95">
+              <i data-lucide="pause" class="w-4 h-4 fill-white"></i> 暂停一下
+            </button>
+            <button @click="stopAndSaveTimer" class="px-5 py-3.5 bg-gray-100 text-gray-700 font-extrabold text-sm rounded-2xl hover:bg-gray-200 transition flex items-center justify-center gap-2 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed" :disabled="timerSeconds === 0">
+              <i data-lucide="square" class="w-4 h-4 fill-current"></i> 结算
+            </button>
+          </div>
+        </div>
+
+        <!-- 🎨 四大维度生活能量分布 (实时联动) -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-black text-gray-800 text-sm flex items-center gap-2">
+              <i data-lucide="activity" class="w-4 h-4 text-purple-500"></i> 一天多维能量实时分布
+            </h3>
+            <span class="text-[11px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md">实时动态</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <!-- 学习 -->
+            <div class="p-3.5 rounded-2xl bg-study-light/60 border border-study-light flex flex-col gap-1.5">
+              <div class="flex items-center justify-between text-xs font-black text-study-dark">
+                <span>📚 学习 (Study)</span>
+                <span>{{ formatHours(todayStudySeconds) }}</span>
+              </div>
+              <div class="w-full bg-white/80 rounded-full h-2 overflow-hidden shadow-inner">
+                <div class="bg-study h-full rounded-full transition-all duration-500" :style="{ width: stats.studyPercent + '%' }"></div>
+              </div>
+              <span class="text-[10px] text-gray-400 font-semibold">包含专注时长与练字背词</span>
+            </div>
+
+            <!-- 健康 -->
+            <div class="p-3.5 rounded-2xl bg-health-light/60 border border-health-light flex flex-col gap-1.5">
+              <div class="flex items-center justify-between text-xs font-black text-health-dark">
+                <span>🌿 健康 (Health)</span>
+                <span>{{ stats.healthDoneCount }} / {{ stats.healthTotalCount }} 项</span>
+              </div>
+              <div class="w-full bg-white/80 rounded-full h-2 overflow-hidden shadow-inner">
+                <div class="bg-health h-full rounded-full transition-all duration-500" :style="{ width: stats.healthPercent + '%' }"></div>
+              </div>
+              <span class="text-[10px] text-gray-400 font-semibold">包含日常运动与身体呵护</span>
+            </div>
+
+            <!-- 变美 -->
+            <div class="p-3.5 rounded-2xl bg-beauty-light/60 border border-beauty-light flex flex-col gap-1.5">
+              <div class="flex items-center justify-between text-xs font-black text-beauty-dark">
+                <span>🌸 变美 (Beauty)</span>
+                <span>{{ stats.beautyDoneCount }} / {{ stats.beautyTotalCount }} 项</span>
+              </div>
+              <div class="w-full bg-white/80 rounded-full h-2 overflow-hidden shadow-inner">
+                <div class="bg-beauty h-full rounded-full transition-all duration-500" :style="{ width: stats.beautyPercent + '%' }"></div>
+              </div>
+              <span class="text-[10px] text-gray-400 font-semibold">包含面膜护肤、美甲发型</span>
+            </div>
+
+            <!-- 生活 -->
+            <div class="p-3.5 rounded-2xl bg-life-light/60 border border-life-light flex flex-col gap-1.5">
+              <div class="flex items-center justify-between text-xs font-black text-life-dark">
+                <span>☕ 生活 (Life)</span>
+                <span>{{ stats.lifeDoneCount }} / {{ stats.lifeTotalCount }} 项</span>
+              </div>
+              <div class="w-full bg-white/80 rounded-full h-2 overflow-hidden shadow-inner">
+                <div class="bg-life h-full rounded-full transition-all duration-500" :style="{ width: stats.lifePercent + '%' }"></div>
+              </div>
+              <span class="text-[10px] text-gray-400 font-semibold">包含打扫、视频、每周记账</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= MIDDLE COLUMN: 智能周期任务打卡清单 (高响应+超醒目背词) + 每日大事 (5 Cols) ================= -->
+      <section class="lg:col-span-5 flex flex-col gap-6">
+
+        <!-- 🎯 智能周期打卡总览 -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-pink-500"></span>
+              <h2 class="font-black text-gray-800 text-base">智能生活习惯与周期打卡</h2>
+            </div>
+            <span class="text-xs text-gray-400 font-medium">点击整行或勾选框即可打卡</span>
+          </div>
+
+          <!-- 任务列表 -->
+          <div class="flex flex-col gap-3">
+
+            <!-- 1. 每天背10个单词 (超醒目数字与进度展示) -->
+            <div @click="toggleVocab" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm"
+                 :class="habits.vocab.doneToday ? 'bg-purple-50/80 border-purple-300' : 'bg-white border-gray-100 hover:border-purple-200'">
+              <div class="flex items-center gap-3.5">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center transition"
+                     :class="habits.vocab.doneToday ? 'bg-study text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
+                  <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-black px-2 py-0.5 rounded-md bg-study-light text-study-dark">学习 · 每日</span>
+                    <h4 class="font-black text-base text-gray-800">每天背 10 个单词</h4>
+                  </div>
+                  <!-- 醒目放大的进度词汇 -->
+                  <div class="mt-1 flex items-baseline gap-1">
+                    <span class="text-xs font-semibold text-gray-500">今日已背:</span>
+                    <span class="text-lg font-black font-mono text-purple-600">{{ habits.vocab.todayCount }}</span>
+                    <span class="text-xs font-bold text-gray-400">/ 10 词</span>
+                    <span v-if="habits.vocab.doneToday" class="ml-2 text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">已达标 ✨</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 步进按钮 (防止事件冒泡阻断整行点击) -->
+              <div class="flex items-center gap-1.5" @click.stop>
+                <button @click="addVocab(-1)" class="w-8 h-8 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 font-black text-sm hover:bg-gray-100 flex items-center justify-center active:scale-90">-</button>
+                <button @click="addVocab(1)" class="w-8 h-8 rounded-xl bg-study text-white font-black text-sm hover:bg-study-dark flex items-center justify-center shadow active:scale-90">+</button>
+              </div>
+            </div>
+
+            <!-- 2. 隔天敷面膜 (周期自动推算) -->
+            <div @click="checkInHabit('mask')" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm"
+                 :class="maskStatus.completedToday ? 'bg-pink-50/80 border-pink-300' : (maskStatus.dueToday ? 'bg-pink-50/40 border-pink-200' : 'bg-white border-gray-100 hover:border-pink-100')">
+              <div class="flex items-center gap-3.5">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center transition"
+                     :class="maskStatus.completedToday ? 'bg-beauty text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
+                  <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-black px-2 py-0.5 rounded-md bg-beauty-light text-beauty-dark">变美 · 隔天</span>
+                    <h4 class="font-black text-base text-gray-800">隔天敷面膜</h4>
+                  </div>
+                  <p class="text-xs mt-1 font-semibold" :class="maskStatus.dueToday && !maskStatus.completedToday ? 'text-pink-600' : 'text-gray-400'">
+                    {{ maskStatus.desc }}
+                  </p>
+                </div>
+              </div>
+              <span v-if="maskStatus.dueToday && !maskStatus.completedToday" class="text-xs px-2.5 py-1 rounded-xl bg-pink-500 text-white font-black animate-pulse shadow-sm">
+                今日需敷
+              </span>
+            </div>
+
+            <!-- 3. 一周锻炼4天 (每周频次) -->
+            <div @click="toggleWorkoutToday" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm"
+                 :class="habits.workout.doneToday ? 'bg-green-50/80 border-green-300' : 'bg-white border-gray-100 hover:border-green-100'">
+              <div class="flex items-center gap-3.5">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center transition"
+                     :class="habits.workout.doneToday ? 'bg-health text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
+                  <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-black px-2 py-0.5 rounded-md bg-health-light text-health-dark">健康 · 每周</span>
+                    <h4 class="font-black text-base text-gray-800">一周锻炼 4 天</h4>
+                  </div>
+                  <div class="mt-1 flex items-baseline gap-1">
+                    <span class="text-xs font-semibold text-gray-500">本周已练:</span>
+                    <span class="text-base font-black font-mono text-emerald-600">{{ habits.workout.weekCount }}</span>
+                    <span class="text-xs font-bold text-gray-400">/ 4 天</span>
+                    <span v-if="habits.workout.weekCount >= 4" class="ml-2 text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">本周已达标 🎉</span>
+                  </div>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-gray-400">
+                {{ habits.workout.doneToday ? '今日已打卡' : '点击打卡' }}
+              </span>
+            </div>
+
+            <!-- 4. 一周一次类任务集合 (打扫 / 练字 / 视频 / 算账) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+              <!-- 打扫卫生 -->
+              <div @click="toggleWeeklyHabit('cleaning')" class="p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm"
+                   :class="habits.weekly.cleaning ? 'bg-amber-50/90 border-amber-300' : 'bg-white border-gray-100 hover:border-amber-200'">
+                <div class="flex items-center gap-3">
+                  <div class="w-7 h-7 rounded-xl flex items-center justify-center transition"
+                       :class="habits.weekly.cleaning ? 'bg-life text-white shadow' : 'bg-gray-100 border border-gray-200 text-transparent'">
+                    <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+                  </div>
+                  <div>
+                    <span class="text-xs font-black text-gray-800 block">🧹 一周打扫一次</span>
+                    <span class="text-[10px] font-bold" :class="habits.weekly.cleaning ? 'text-amber-600' : 'text-gray-400'">本周{{ habits.weekly.cleaning ? '已完成' : '待完成' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 一周一练字 -->
+              <div @click="toggleWeeklyHabit('calligraphy')" class="p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm"
+                   :class="habits.weekly.calligraphy ? 'bg-purple-50/90 border-purple-300' : 'bg-white border-gray-100 hover:border-purple-200'">
+                <div class="flex items-center gap-3">
+                  <div class="w-7 h-7 rounded-xl flex items-center justify-center transition"
+                       :class="habits.weekly.calligraphy ? 'bg-study text-white shadow' : 'bg-gray-100 border border-gray-200 text-transparent'">
+                    <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+                  </div>
+                  <div>
+                    <span class="text-xs font-black text-gray-800 block">✍️ 一周一练字</span>
+                    <span class="text-[10px] font-bold" :class="habits.weekly.calligraphy ? 'text-purple-600' : 'text-gray-400'">本周{{ habits.weekly.calligraphy ? '已完成' : '待完成' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 一周打视频 -->
+              <div @click="toggleWeeklyHabit('videoCall')" class="p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm"
+                   :class="habits.weekly.videoCall ? 'bg-amber-50/90 border-amber-300' : 'bg-white border-gray-100 hover:border-amber-200'">
+                <div class="flex items-center gap-3">
+                  <div class="w-7 h-7 rounded-xl flex items-center justify-center transition"
+                       :class="habits.weekly.videoCall ? 'bg-life text-white shadow' : 'bg-gray-100 border border-gray-200 text-transparent'">
+                    <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+                  </div>
+                  <div>
+                    <span class="text-xs font-black text-gray-800 block">📱 一周打视频</span>
+                    <span class="text-[10px] font-bold" :class="habits.weekly.videoCall ? 'text-amber-600' : 'text-gray-400'">本周{{ habits.weekly.videoCall ? '已连线' : '待连线' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 一周算一次账 -->
+              <div @click="toggleWeeklyHabit('budget')" class="p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between select-none shadow-sm"
+                   :class="habits.weekly.budget ? 'bg-amber-50/90 border-amber-300' : 'bg-white border-gray-100 hover:border-amber-200'">
+                <div class="flex items-center gap-3">
+                  <div class="w-7 h-7 rounded-xl flex items-center justify-center transition"
+                       :class="habits.weekly.budget ? 'bg-life text-white shadow' : 'bg-gray-100 border border-gray-200 text-transparent'">
+                    <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+                  </div>
+                  <div>
+                    <span class="text-xs font-black text-gray-800 block">📊 一周算一次账</span>
+                    <span class="text-[10px] font-bold" :class="habits.weekly.budget ? 'text-amber-600' : 'text-gray-400'">本周{{ habits.weekly.budget ? '已核算' : '待整理' }}</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- 5. 中长周期倒数跟踪 (宝宝洗澡/消毒、剪指甲、剪头发) -->
+            <div class="p-4 rounded-2xl bg-gray-50/90 border border-gray-100 flex flex-col gap-3">
+              <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">中长期智能周期追踪</span>
+
+              <!-- 两周给宝宝们洗澡/消毒 -->
+              <div class="flex items-center justify-between text-xs">
+                <div>
+                  <span class="font-bold text-gray-700">🧸 两周给宝宝洗澡或消毒</span>
+                  <span class="text-gray-400 block text-[11px] mt-0.5">{{ getIntervalStatus('babyCare', 14).desc }}</span>
+                </div>
+                <button @click="checkInInterval('babyCare')" class="px-3.5 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 shadow-sm active:scale-95">
+                  刚刚完成
+                </button>
+              </div>
+
+              <!-- 两周剪一次指甲 -->
+              <div class="flex items-center justify-between text-xs border-t border-gray-200/60 pt-2.5">
+                <div>
+                  <span class="font-bold text-gray-700">💅 两周剪一次指甲</span>
+                  <span class="text-gray-400 block text-[11px] mt-0.5">{{ getIntervalStatus('nails', 14).desc }}</span>
+                </div>
+                <button @click="checkInInterval('nails')" class="px-3.5 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 shadow-sm active:scale-95">
+                  刚刚完成
+                </button>
+              </div>
+
+              <!-- 两个月剪一次头发 -->
+              <div class="flex items-center justify-between text-xs border-t border-gray-200/60 pt-2.5">
+                <div>
+                  <span class="font-bold text-gray-700">💇‍♀️ 两个月剪一次头发</span>
+                  <span class="text-gray-400 block text-[11px] mt-0.5">{{ getIntervalStatus('haircut', 60).desc }}</span>
+                </div>
+                <button @click="checkInInterval('haircut')" class="px-3.5 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 shadow-sm active:scale-95">
+                  刚刚完成
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 📝 每日大事 & 产出记录 -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+              <h2 class="font-black text-gray-800 text-base">今日大事与产出记录</h2>
+            </div>
+            <span class="text-xs text-gray-400 font-medium">每步努力都算数</span>
+          </div>
+
+          <!-- 新增大事输入框 -->
+          <div class="flex gap-2">
+            <select v-model="newMilestone.category" class="text-xs font-bold px-3 py-2.5 rounded-2xl bg-gray-50 border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200">
+              <option value="学习">📚 学习</option>
+              <option value="生活">☕ 生活</option>
+              <option value="健康">🌿 健康</option>
+              <option value="变美">🌸 变美</option>
+            </select>
+            <input v-model="newMilestone.text" @keyup.enter="addMilestone" type="text" placeholder="今天搞定了什么大事/产出了什么？" class="flex-1 text-xs px-3.5 py-2.5 rounded-2xl bg-gray-50 border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200">
+            <button @click="addMilestone" class="px-4 py-2.5 bg-purple-600 text-white font-black text-xs rounded-2xl hover:bg-purple-700 transition shrink-0 active:scale-95 shadow-md shadow-purple-200">
+              记录
+            </button>
+          </div>
+
+          <!-- 大事列表流 -->
+          <div class="flex flex-col gap-2.5 max-h-60 overflow-y-auto pr-1">
+            <div v-if="todayMilestones.length === 0" class="text-center py-6 text-xs text-gray-400">
+              今天还没有记录大事，快去完成一件吧 ✨
+            </div>
+            <div v-for="(item, idx) in todayMilestones" :key="item.id" class="p-3.5 rounded-2xl bg-gray-50/80 border border-gray-100 flex items-start justify-between gap-3 text-xs">
+              <div class="flex items-start gap-2.5">
+                <span class="px-2 py-0.5 rounded-md font-extrabold text-[10px]" :class="getCategoryBadgeClass(item.category)">
+                  {{ item.category }}
+                </span>
+                <div>
+                  <p class="text-gray-800 font-semibold leading-relaxed">{{ item.text }}</p>
+                  <span class="text-[10px] text-gray-400 font-mono">{{ item.time }}</span>
+                </div>
+              </div>
+              <button @click="deleteMilestone(item.id)" class="text-gray-400 hover:text-red-500 transition p-1">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= RIGHT COLUMN: 重要日历/生日 + 每周备忘便签 + 每周轻量记账 (3 Cols) ================= -->
+      <section class="lg:col-span-3 flex flex-col gap-6">
+
+        <!-- 📅 重要日子 & 家人生日倒数 -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+              <h2 class="font-black text-gray-800 text-base">重要日子 & 生日</h2>
+            </div>
+            <button @click="showAddEventModal = true" class="text-xs text-purple-600 font-bold hover:text-purple-700 flex items-center gap-1">
+              + 添加
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-2.5">
+            <div v-for="evt in specialEvents" :key="evt.id" class="p-3 rounded-2xl border border-gray-100 bg-rose-50/40 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2.5">
+                <span class="text-base">{{ evt.icon || '🎂' }}</span>
+                <div>
+                  <h4 class="font-bold text-gray-800">{{ evt.name }}</h4>
+                  <span class="text-[10px] text-gray-400">{{ evt.date }}</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-black text-rose-500">
+                  {{ getDaysUntil(evt.date) === 0 ? '🎉 就是今天!' : `还有 ${getDaysUntil(evt.date)} 天` }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 📌 每周可视化备忘录 (随时删改) -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+              <h2 class="font-black text-gray-800 text-base">每周备忘录</h2>
+            </div>
+            <button @click="showAddMemoModal = true" class="text-xs text-amber-600 font-bold hover:text-amber-700">
+              + 新便签
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 gap-2.5 max-h-72 overflow-y-auto pr-1">
+            <div v-if="weeklyMemos.length === 0" class="text-center py-6 text-xs text-gray-400">
+              暂无备忘便签，点击右上角添加 ✨
+            </div>
+            <div v-for="memo in weeklyMemos" :key="memo.id" class="p-3.5 rounded-2xl border transition relative group text-xs flex flex-col gap-1.5 shadow-sm" :style="{ backgroundColor: memo.bgColor || '#FEF3C7', borderColor: memo.borderColor || '#FDE68A' }">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-gray-800">{{ memo.title }}</span>
+                <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition">
+                  <button @click="editMemo(memo)" class="p-1 hover:text-purple-700 text-gray-500">
+                    <i data-lucide="edit-3" class="w-3 h-3"></i>
+                  </button>
+                  <button @click="deleteMemo(memo.id)" class="p-1 hover:text-red-600 text-gray-500">
+                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                  </button>
+                </div>
+              </div>
+              <p class="text-gray-600 text-[11px] leading-relaxed whitespace-pre-line">{{ memo.content }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 💰 每周轻量记账总览 (每周算一次账) -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <h2 class="font-black text-gray-800 text-base">本周记账简报</h2>
+            </div>
+            <span class="text-xs text-emerald-600 font-black font-mono">¥{{ weeklyTotalExpense }}</span>
+          </div>
+
+          <div class="flex gap-2">
+            <input v-model="newExpense.title" type="text" placeholder="账目说明" class="flex-1 text-xs px-3 py-2 rounded-2xl bg-gray-50 border border-gray-200">
+            <input v-model.number="newExpense.amount" type="number" placeholder="¥金额" class="w-20 text-xs px-2.5 py-2 rounded-2xl bg-gray-50 border border-gray-200 font-mono">
+            <button @click="addExpense" class="px-3.5 py-2 bg-emerald-600 text-white font-bold text-xs rounded-2xl hover:bg-emerald-700 active:scale-95 shadow-sm">
+              记下
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-1.5 max-h-36 overflow-y-auto">
+            <div v-for="item in weeklyExpenses" :key="item.id" class="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-xl bg-gray-50/80">
+              <span class="text-gray-700 font-medium">{{ item.title }}</span>
+              <div class="flex items-center gap-2">
+                <span class="font-black text-emerald-600 font-mono">¥{{ item.amount }}</span>
+                <button @click="deleteExpense(item.id)" class="text-gray-300 hover:text-red-500">×</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- ================= 🐶 页面右下角悬浮互动桌面宠物挂件 (Desktop Pet Widget) ================= -->
+    <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end pointer-events-none select-none">
+      <!-- 气泡对话框 (点击时弹出) -->
+      <div v-if="petDialogue" class="mb-2 px-3.5 py-2 rounded-2xl bg-white/95 backdrop-blur shadow-lg border border-purple-100 text-xs font-bold text-gray-800 flex items-center gap-1.5 animate-bounce pointer-events-auto">
+        <span>🐾 {{ petDialogue }}</span>
+      </div>
+
+      <!-- 可点击交互小狗主体 -->
+      <div @click="triggerPetAction" class="w-24 h-24 sm:w-28 sm:h-28 bg-white/90 backdrop-blur-md rounded-3xl p-1.5 shadow-2xl border-2 border-purple-200 flex items-center justify-center cursor-pointer pointer-events-auto group hover:scale-105 active:scale-95 transition-transform" title="点击戳我：扭屁股/跳跃/压扁/转圈">
+        <img :src="currentPetImg" alt="Interactive Desktop Pet" class="w-full h-full object-contain filter drop-shadow" :class="petAnimClass">
+        <!-- 动作标签提示 -->
+        <span class="absolute -top-2 -left-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">
+          {{ currentActionName }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Modal: 添加重要纪念日 -->
+    <div v-if="showAddEventModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col gap-4">
+        <h3 class="font-black text-gray-800 text-base">添加重要日子 / 生日</h3>
+        <div class="flex flex-col gap-3 text-xs">
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">事件名称</label>
+            <input v-model="newEvent.name" type="text" placeholder="例如: 妈妈生日 / 结婚纪念日" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">日期 (YYYY-MM-DD 或 MM-DD)</label>
+            <input v-model="newEvent.date" type="text" placeholder="例如: 08-30 或 2026-08-30" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">图标 Emoji</label>
+            <input v-model="newEvent.icon" type="text" placeholder="🎂 / 🎉 / 💍" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50">
+          </div>
+        </div>
+        <div class="flex gap-2 justify-end mt-2">
+          <button @click="showAddEventModal = false" class="px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-xl">取消</button>
+          <button @click="saveNewEvent" class="px-4 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-xl">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: 新增/编辑备忘录 -->
+    <div v-if="showAddMemoModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col gap-4">
+        <h3 class="font-black text-gray-800 text-base">{{ editingMemoId ? '编辑备忘录' : '新增每周备忘录' }}</h3>
+        <div class="flex flex-col gap-3 text-xs">
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">便签标题</label>
+            <input v-model="memoForm.title" type="text" placeholder="例如: 周末采购清单" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">便签内容</label>
+            <textarea v-model="memoForm.content" rows="3" placeholder="具体待办事项..." class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50"></textarea>
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">便签颜色</label>
+            <div class="flex gap-2">
+              <button v-for="c in memoColors" :key="c.name" @click="memoForm.bgColor = c.bg; memoForm.borderColor = c.border" type="button" class="w-6 h-6 rounded-full border-2" :style="{ backgroundColor: c.bg, borderColor: c.border }" :class="{ 'ring-2 ring-purple-500': memoForm.bgColor === c.bg }"></button>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-2 justify-end mt-2">
+          <button @click="showAddMemoModal = false" class="px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-xl">取消</button>
+          <button @click="saveMemo" class="px-4 py-2 text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 rounded-xl">保存便签</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Vue 3 Application Script -->
+  <script>
+    const { createApp, ref, computed, onMounted, watch } = Vue;
+
+    createApp({
+      setup() {
+        const STORAGE_KEY = 'LIFE_PET_APP_DATA_V3';
+
+        // 默认初始化数据
+        const getDefaultData = () => ({
+          todayStudySeconds: 0,
+          habits: {
+            vocab: { todayCount: 0, doneToday: false },
+            workout: { weekCount: 0, doneToday: false, lastDate: null },
+            weekly: { cleaning: false, calligraphy: false, videoCall: false, budget: false },
+            intervals: {
+              mask: { lastDate: null },
+              babyCare: { lastDate: null },
+              nails: { lastDate: null },
+              haircut: { lastDate: null }
+            }
+          },
+          milestones: [],
+          specialEvents: [
+            { id: 1, name: '妈妈生日', date: '08-30', icon: '🎂' },
+            { id: 2, name: '宝宝体检', date: '09-12', icon: '🧸' }
+          ],
+          weeklyMemos: [
+            { id: 1, title: '周三提醒', content: '去菜鸟驿站拿生鲜包裹', bgColor: '#FEF3C7', borderColor: '#FDE68A' }
+          ],
+          weeklyExpenses: []
+        });
+
+        const loadSavedData = () => {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) return JSON.parse(raw);
+          } catch(e) { console.error(e); }
+          return getDefaultData();
+        };
+
+        const state = ref(loadSavedData());
+
+        watch(state, (newVal) => {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal));
+          } catch(e) { console.error(e); }
+        }, { deep: true });
+
+        // 日期展示
+        const now = new Date();
+        const daysOfWeek = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        const currentDateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${daysOfWeek[now.getDay()]}`;
+
+        // 🐶 真实玩偶透明图片与 4 种轮流互动动效引擎
+        const IMG_FRONT = './pet_front.png';
+        const IMG_BACK = './pet_back.png';
+
+        const currentPetImg = ref(IMG_FRONT);
+        const petAnimClass = ref('pet-idle');
+        const petDialogue = ref('戳戳我试试看~ ✨');
+        const actionBadgeText = ref('');
+        const currentActionName = ref('戳我互动');
+        const actionIndex = ref(0);
+        let actionTimeout = null;
+
+        const actionList = [
+          {
+            name: '扭屁股 🍑',
+            class: 'anim-wiggle',
+            img: IMG_BACK,
+            dialogue: '看我的无敌圆滚滚屁股扭扭！'
+          },
+          {
+            name: '开心跳跃 🐾',
+            class: 'anim-jump',
+            img: IMG_FRONT,
+            dialogue: '哇！今天感觉浑身都是力气！'
+          },
+          {
+            name: '压扁回弹 🍮',
+            class: 'anim-squish',
+            img: IMG_FRONT,
+            dialogue: '哎呀呀被你捏扁了~ 弹回来啦！'
+          },
+          {
+            name: '炫酷转圈 💫',
+            class: 'anim-spin',
+            img: IMG_FRONT,
+            dialogue: '爱的魔力转圈圈~ 呼呼！'
+          }
+        ];
+
+        const triggerPetAction = () => {
+          if (actionTimeout) clearTimeout(actionTimeout);
+
+          const action = actionList[actionIndex.value % actionList.length];
+          actionIndex.value++;
+
+          currentPetImg.value = action.img;
+          petAnimClass.value = action.class;
+          petDialogue.value = action.dialogue;
+          actionBadgeText.value = action.name;
+          currentActionName.value = action.name;
+
+          // 触发轻量小彩屑
+          try { confetti({ particleCount: 35, spread: 50, origin: { x: 0.9, y: 0.9 } }); } catch(e){}
+
+          actionTimeout = setTimeout(() => {
+            currentPetImg.value = IMG_FRONT;
+            petAnimClass.value = 'pet-idle';
+            actionBadgeText.value = '';
+            setTimeout(() => { petDialogue.value = ''; }, 2000);
+          }, 1200);
+        };
+
+        // 计时器相关
+        const timerSeconds = ref(0);
+        const timerRunning = ref(false);
+        let timerInterval = null;
+
+        const startTimer = () => {
+          timerRunning.value = true;
+          timerInterval = setInterval(() => {
+            timerSeconds.value++;
+          }, 1000);
+        };
+
+        const pauseTimer = () => {
+          timerRunning.value = false;
+          clearInterval(timerInterval);
+        };
+
+        const stopAndSaveTimer = () => {
+          pauseTimer();
+          if (timerSeconds.value > 0) {
+            state.value.todayStudySeconds += timerSeconds.value;
+            try { confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } }); } catch(e){}
+            timerSeconds.value = 0;
+          }
+        };
+
+        const formatTimer = (sec) => {
+          const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+          const s = (sec % 60).toString().padStart(2, '0');
+          const h = Math.floor(sec / 3600).toString().padStart(2, '0');
+          return `${h} : ${m} : ${s}`;
+        };
+
+        const formatHours = (sec) => {
+          const h = (sec / 3600).toFixed(1);
+          return `${h} 小时`;
+        };
+
+        // 宠物语录计算
+        const petMood = computed(() => {
+          if (state.value.todayStudySeconds >= 7200) return '超开心 🌟';
+          if (timerRunning.value) return '认真陪伴中 🐾';
+          return '元气满满 🐶';
+        });
+
+        const petQuote = computed(() => {
+          if (state.value.todayStudySeconds >= 7200) return '今天超厉害！已经专注了很长时间，给主人竖起大拇指！';
+          if (timerRunning.value) return '嘘——正在专心学习中，小狗会一直安静陪着你哦~';
+          return '记得隔天敷面膜、每天背背单词，生活规律的你最漂亮啦！';
+        });
+
+        // 习惯打卡
+        const habits = computed(() => state.value.habits);
+
+        const toggleVocab = () => {
+          habits.value.vocab.doneToday = !habits.value.vocab.doneToday;
+          if (habits.value.vocab.doneToday) {
+            habits.value.vocab.todayCount = 10;
+            try { confetti({ particleCount: 40, spread: 45, origin: { y: 0.8 } }); } catch(e){}
+          } else {
+            habits.value.vocab.todayCount = 0;
+          }
+        };
+
+        const addVocab = (delta) => {
+          let count = (habits.value.vocab.todayCount || 0) + delta;
+          if (count < 0) count = 0;
+          habits.value.vocab.todayCount = count;
+          habits.value.vocab.doneToday = count >= 10;
+          if (count >= 10 && delta > 0) {
+            try { confetti({ particleCount: 50, spread: 50, origin: { y: 0.8 } }); } catch(e){}
+          }
+        };
+
+        const maskStatus = computed(() => {
+          const lastDateStr = state.value.habits.intervals.mask.lastDate;
+          if (!lastDateStr) return { dueToday: true, completedToday: false, desc: '尚未记录，今天建议敷一张哦' };
+          const last = new Date(lastDateStr);
+          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+
+          if (diffDays === 0) {
+            return { dueToday: false, completedToday: true, desc: '今天已敷过面膜，肌肤水嫩嫩 💧' };
+          } else if (diffDays >= 2) {
+            return { dueToday: true, completedToday: false, desc: `距离上次已过 ${diffDays} 天，今天该敷啦！` };
+          } else {
+            return { dueToday: false, completedToday: false, desc: '昨天已敷，今天让皮肤好好呼吸休息~' };
+          }
+        });
+
+        const checkInHabit = (type) => {
+          if (type === 'mask') {
+            const todayStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
+            if (state.value.habits.intervals.mask.lastDate === todayStr) {
+              state.value.habits.intervals.mask.lastDate = null;
+            } else {
+              state.value.habits.intervals.mask.lastDate = todayStr;
+              try { confetti({ particleCount: 60, spread: 50, origin: { y: 0.6 } }); } catch(e){}
+            }
+          }
+        };
+
+        const toggleWorkoutToday = () => {
+          habits.value.workout.doneToday = !habits.value.workout.doneToday;
+          if (habits.value.workout.doneToday) {
+            habits.value.workout.weekCount = (habits.value.workout.weekCount || 0) + 1;
+            try { confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } }); } catch(e){}
+          } else {
+            habits.value.workout.weekCount = Math.max(0, (habits.value.workout.weekCount || 1) - 1);
+          }
+        };
+
+        const toggleWeeklyHabit = (key) => {
+          habits.value.weekly[key] = !habits.value.weekly[key];
+          if (habits.value.weekly[key]) {
+            try { confetti({ particleCount: 40, spread: 40, origin: { y: 0.7 } }); } catch(e){}
+          }
+        };
+
+        const getIntervalStatus = (key, cycleDays) => {
+          const item = state.value.habits.intervals[key];
+          if (!item || !item.lastDate) return { desc: '尚未记录，点击右侧刚刚完成进行更新' };
+          const last = new Date(item.lastDate);
+          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+          const remain = cycleDays - diffDays;
+
+          if (remain <= 0) {
+            return { desc: `已达周期 (上次: ${item.lastDate})，建议尽快安排` };
+          }
+          return { desc: `上次: ${item.lastDate} · 预计还剩 ${remain} 天` };
+        };
+
+        const checkInInterval = (key) => {
+          const todayStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
+          state.value.habits.intervals[key].lastDate = todayStr;
+          try { confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } }); } catch(e){}
+        };
+
+        // 今日完成度百分比
+        const todayProgressPercent = computed(() => {
+          let total = 4;
+          let done = 0;
+          if (habits.value.vocab.doneToday) done++;
+          if (maskStatus.value.completedToday || !maskStatus.value.dueToday) done++;
+          if (habits.value.workout.doneToday) done++;
+          if (state.value.todayStudySeconds >= 3600) done++;
+          return Math.round((done / total) * 100);
+        });
+
+        // 四大维度统计
+        const stats = computed(() => {
+          let studyScore = 0;
+          if (habits.value.vocab.doneToday) studyScore += 35;
+          if (habits.value.weekly.calligraphy) studyScore += 35;
+          if (state.value.todayStudySeconds > 0) {
+            studyScore += Math.min(30, Math.round((state.value.todayStudySeconds / 7200) * 30));
+          }
+
+          const healthDone = (habits.value.workout.doneToday ? 1 : 0) + (habits.value.intervals.babyCare.lastDate ? 1 : 0);
+          const healthTotal = 2;
+          const healthPct = habits.value.workout.doneToday ? 100 : (habits.value.workout.weekCount > 0 ? 50 : 0);
+
+          let beautyDone = 0;
+          if (maskStatus.value.completedToday) beautyDone++;
+          if (habits.value.intervals.nails.lastDate) beautyDone++;
+          if (habits.value.intervals.haircut.lastDate) beautyDone++;
+          const beautyPct = maskStatus.value.completedToday ? 100 : (maskStatus.value.dueToday ? 20 : 70);
+
+          const lifeKeys = ['cleaning', 'videoCall', 'budget'];
+          const lifeDone = lifeKeys.filter(k => habits.value.weekly[k]).length;
+          const lifePct = Math.round((lifeDone / lifeKeys.length) * 100);
+
+          return {
+            studyPercent: Math.min(100, studyScore),
+            healthDoneCount: healthDone,
+            healthTotalCount: healthTotal,
+            healthPercent: healthPct,
+            beautyDoneCount: beautyDone,
+            beautyTotalCount: 3,
+            beautyPercent: beautyPct,
+            lifeDoneCount: lifeDone,
+            lifeTotalCount: lifeKeys.length,
+            lifePercent: lifePct
+          };
+        });
+
+        // 每日大事
+        const todayMilestones = computed(() => state.value.milestones || []);
+        const newMilestone = ref({ category: '学习', text: '' });
+
+        const addMilestone = () => {
+          if (!newMilestone.value.text.trim()) return;
+          const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+          state.value.milestones.unshift({
+            id: Date.now(),
+            category: newMilestone.value.category,
+            text: newMilestone.value.text.trim(),
+            time: timeStr
+          });
+          newMilestone.value.text = '';
+          try { confetti({ particleCount: 40, spread: 45, origin: { y: 0.7 } }); } catch(e){}
+        };
+
+        const deleteMilestone = (id) => {
+          state.value.milestones = state.value.milestones.filter(m => m.id !== id);
+        };
+
+        const getCategoryBadgeClass = (cat) => {
+          switch(cat) {
+            case '学习': return 'bg-study-light text-study-dark';
+            case '生活': return 'bg-life-light text-life-dark';
+            case '健康': return 'bg-health-light text-health-dark';
+            case '变美': return 'bg-beauty-light text-beauty-dark';
+            default: return 'bg-gray-100 text-gray-700';
+          }
+        };
+
+        // 重要日子 & 生日
+        const specialEvents = computed(() => state.value.specialEvents || []);
+        const showAddEventModal = ref(false);
+        const newEvent = ref({ name: '', date: '', icon: '🎂' });
+
+        const getDaysUntil = (dateStr) => {
+          let parts = dateStr.split('-');
+          let m = parseInt(parts[parts.length - 2], 10) - 1;
+          let d = parseInt(parts[parts.length - 1], 10);
+          let target = new Date(now.getFullYear(), m, d);
+          if (target < new Date(now.getFullYear(), now.getMonth(), now.getDate())) {
+            target = new Date(now.getFullYear() + 1, m, d);
+          }
+          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+        };
+
+        const saveNewEvent = () => {
+          if (!newEvent.value.name.trim() || !newEvent.value.date.trim()) return;
+          state.value.specialEvents.push({
+            id: Date.now(),
+            name: newEvent.value.name.trim(),
+            date: newEvent.value.date.trim(),
+            icon: newEvent.value.icon || '🎉'
+          });
+          newEvent.value = { name: '', date: '', icon: '🎂' };
+          showAddEventModal.value = false;
+        };
+
+        // 每周备忘录
+        const weeklyMemos = computed(() => state.value.weeklyMemos || []);
+        const showAddMemoModal = ref(false);
+        const editingMemoId = ref(null);
+        const memoForm = ref({ title: '', content: '', bgColor: '#FEF3C7', borderColor: '#FDE68A' });
+
+        const memoColors = [
+          { name: '黄', bg: '#FEF3C7', border: '#FDE68A' },
+          { name: '紫', bg: '#EDE9FE', border: '#DDD6FE' },
+          { name: '绿', bg: '#D1FAE5', border: '#A7F3D0' },
+          { name: '粉', bg: '#FCE7F3', border: '#FBCFE8' }
+        ];
+
+        const editMemo = (memo) => {
+          editingMemoId.value = memo.id;
+          memoForm.value = { ...memo };
+          showAddMemoModal.value = true;
+        };
+
+        const saveMemo = () => {
+          if (!memoForm.value.title.trim()) return;
+          if (editingMemoId.value) {
+            const idx = state.value.weeklyMemos.findIndex(m => m.id === editingMemoId.value);
+            if (idx !== -1) {
+              state.value.weeklyMemos[idx] = { ...memoForm.value, id: editingMemoId.value };
+            }
+          } else {
+            state.value.weeklyMemos.unshift({
+              id: Date.now(),
+              ...memoForm.value
+            });
+          }
+          editingMemoId.value = null;
+          memoForm.value = { title: '', content: '', bgColor: '#FEF3C7', borderColor: '#FDE68A' };
+          showAddMemoModal.value = false;
+        };
+
+        const deleteMemo = (id) => {
+          state.value.weeklyMemos = state.value.weeklyMemos.filter(m => m.id !== id);
+        };
+
+        // 每周记账
+        const weeklyExpenses = computed(() => state.value.weeklyExpenses || []);
+        const newExpense = ref({ title: '', amount: null });
+
+        const weeklyTotalExpense = computed(() => {
+          return (state.value.weeklyExpenses || []).reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+        });
+
+        const addExpense = () => {
+          if (!newExpense.value.title.trim() || !newExpense.value.amount) return;
+          state.value.weeklyExpenses.unshift({
+            id: Date.now(),
+            title: newExpense.value.title.trim(),
+            amount: Number(newExpense.value.amount)
+          });
+          newExpense.value = { title: '', amount: null };
+          state.value.habits.weekly.budget = true;
+          try { confetti({ particleCount: 40, spread: 45, origin: { y: 0.8 } }); } catch(e){}
+        };
+
+        const deleteExpense = (id) => {
+          state.value.weeklyExpenses = state.value.weeklyExpenses.filter(e => e.id !== id);
+        };
+
+        // 数据导出导入
+        const exportData = () => {
+          const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.value, null, 2));
+          const downloadAnchor = document.createElement('a');
+          downloadAnchor.setAttribute("href", dataStr);
+          downloadAnchor.setAttribute("download", `治愈小铺数据备份_${now.toISOString().slice(0,10)}.json`);
+          document.body.appendChild(downloadAnchor);
+          downloadAnchor.click();
+          downloadAnchor.remove();
+        };
+
+        const importData = (event) => {
+          const file = event.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            try {
+              const parsed = JSON.parse(e.target.result);
+              state.value = parsed;
+              alert('数据恢复成功！🎉');
+            } catch(err) {
+              alert('备份文件解析失败，请检查文件格式。');
+            }
+          };
+          reader.readAsText(file);
+        };
+
+        onMounted(() => {
+          try { lucide.createIcons(); } catch(e){}
+        });
+
+        watch(state, () => {
+          setTimeout(() => {
+            try { lucide.createIcons(); } catch(e){}
+          }, 50);
+        }, { deep: true });
+
+        return {
+          currentDateStr,
+          todayStudySeconds: computed(() => state.value.todayStudySeconds),
+          timerSeconds,
+          timerRunning,
+          startTimer,
+          pauseTimer,
+          stopAndSaveTimer,
+          formatTimer,
+          formatHours,
+          currentPetImg,
+          petAnimClass,
+          petDialogue,
+          actionBadgeText,
+          currentActionName,
+          triggerPetAction,
+          petMood,
+          petQuote,
+          habits,
+          toggleVocab,
+          addVocab,
+          maskStatus,
+          checkInHabit,
+          toggleWorkoutToday,
+          toggleWeeklyHabit,
+          getIntervalStatus,
+          checkInInterval,
+          todayProgressPercent,
+          stats,
+          todayMilestones,
+          newMilestone,
+          addMilestone,
+          deleteMilestone,
+          getCategoryBadgeClass,
+          specialEvents,
+          showAddEventModal,
+          newEvent,
+          getDaysUntil,
+          saveNewEvent,
+          weeklyMemos,
+          showAddMemoModal,
+          editingMemoId,
+          memoForm,
+          memoColors,
+          editMemo,
+          saveMemo,
+          deleteMemo,
+          weeklyExpenses,
+          newExpense,
+          weeklyTotalExpense,
+          addExpense,
+          deleteExpense,
+          exportData,
+          importData
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

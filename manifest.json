@@ -1,0 +1,16 @@
+{
+  "name": "治愈小铺 · 生活陪伴工作台",
+  "short_name": "治愈小铺",
+  "description": "集计时学习、健康打卡、生活备忘与宠物陪伴于一体的治愈系工作台",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FAF8F5",
+  "theme_color": "#8B5CF6",
+  "icons": [
+    {
+      "src": "./pet.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

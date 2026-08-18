@@ -132,42 +132,33 @@
 
     <!-- Top Navigation Header (分两行展示日期与金句) -->
     <header class="flex items-center justify-between bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100/80">
-      <div class="flex items-center gap-3.5">
-        <div @click="currentView = 'home'" class="w-12 h-12 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center border border-purple-100 shadow-sm cursor-pointer active:scale-95 transition" title="返回主页">
-          <img :src="currentPetImg" alt="Pet Mascot" class="w-10 h-10 object-contain" :class="petAnimClass">
+      <div class="flex items-center gap-2 sm:gap-3.5 min-w-0 flex-1">
+        <div @click="currentView = 'home'" class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center border border-purple-100 shadow-sm cursor-pointer active:scale-95 transition shrink-0" title="返回主页">
+          <img :src="currentPetImg" alt="Pet Mascot" class="w-8 h-8 sm:w-10 sm:h-10 object-contain" :class="petAnimClass">
         </div>
-        <div>
+        <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2">
-            <h1 class="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 bg-clip-text text-transparent">
+            <h1 class="text-lg sm:text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 bg-clip-text text-transparent">
               小爱
             </h1>
-            <span v-if="currentView !== 'home'" class="text-xs font-black px-2.5 py-1 rounded-xl bg-purple-100 text-purple-700">
+            <span v-if="currentView !== 'home'" class="text-[10px] sm:text-xs font-black px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-xl bg-purple-100 text-purple-700 whitespace-nowrap">
               {{ currentViewTitle }}
             </span>
           </div>
           <!-- 明确分两行 -->
           <div class="flex flex-col gap-0.5 mt-0.5">
-            <span class="text-xs text-gray-500 font-bold font-mono">{{ currentDateStr }}</span>
-            <span class="text-xs text-gray-400 font-medium">每一个自律的小瞬间，都会让生活更可爱 🌸</span>
+            <span class="text-[10px] sm:text-xs text-gray-500 font-bold font-mono">{{ currentDateStr }}</span>
+            <span class="text-[10px] sm:text-xs text-gray-400 font-medium hidden sm:inline">每一个自律的小瞬间，都会让生活更可爱 🌸</span>
           </div>
         </div>
       </div>
 
-      <!-- Navigation & Data Actions -->
-      <div class="flex items-center gap-2">
-        <button v-if="currentView !== 'home'" @click="currentView = 'home'" class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-2xl transition border border-purple-200 active:scale-95">
-          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-          <span>返回主页</span>
+      <!-- Navigation Actions -->
+      <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+        <button v-if="currentView !== 'home'" @click="currentView = 'home'" class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-1.5 sm:py-2 text-[10px] sm:text-xs font-bold text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-2xl transition border border-purple-200 active:scale-95">
+          <i data-lucide="arrow-left" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
+          <span class="hidden sm:inline">返回主页</span>
         </button>
-        <button @click="exportData" class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-2xl transition border border-gray-200 shadow-sm active:scale-95" title="备份数据">
-          <i data-lucide="download" class="w-3.5 h-3.5 text-gray-500"></i>
-          <span class="hidden sm:inline">备份</span>
-        </button>
-        <label class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-2xl transition border border-gray-200 shadow-sm cursor-pointer active:scale-95" title="恢复数据">
-          <i data-lucide="upload" class="w-3.5 h-3.5 text-gray-500"></i>
-          <span class="hidden sm:inline">导入</span>
-          <input type="file" @change="importData" accept=".json" class="hidden">
-        </label>
       </div>
     </header>
 
@@ -403,38 +394,38 @@
 
     <!-- ================= 独立板块 1: ⏱️ 学习专注计时页面 (Focus View) ================= -->
     <main v-if="currentView === 'focus'" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-fade-in">
-      <div class="lg:col-span-6 lg:col-start-4 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col gap-6">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl font-black text-gray-800 flex items-center gap-2">
+      <div class="lg:col-span-6 lg:col-start-4 bg-white rounded-3xl p-5 sm:p-6 md:p-8 shadow-sm border border-gray-100 flex flex-col gap-5 sm:gap-6">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h2 class="text-lg sm:text-xl font-black text-gray-800 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-study"></span> 学习专注沉浸
           </h2>
-          <span class="text-xs font-black px-3 py-1 bg-study-light text-study-dark rounded-xl font-mono">
+          <span class="text-xs font-black px-3 py-1 bg-study-light text-study-dark rounded-xl font-mono whitespace-nowrap">
             今日累计: {{ formatHours(todayStudySeconds) }}
           </span>
         </div>
 
-        <div class="py-10 px-4 rounded-3xl bg-gradient-to-br from-purple-50/60 via-white to-pink-50/40 border-2 border-purple-100 flex flex-col items-center justify-center"
+        <div class="py-8 sm:py-10 px-3 sm:px-4 rounded-3xl bg-gradient-to-br from-purple-50/60 via-white to-pink-50/40 border-2 border-purple-100 flex flex-col items-center justify-center"
              :class="{ 'timer-running-box border-purple-300': timerRunning }">
-          <span class="text-xs font-extrabold uppercase tracking-widest text-purple-500 mb-2">
+          <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest text-purple-500 mb-2">
             {{ timerRunning ? '🔥 深度心流专注中...' : 'READY TO FOCUS' }}
           </span>
-          <div class="text-5xl sm:text-6xl font-black font-mono tracking-tight text-gray-800 my-2">
+          <div class="text-4xl sm:text-5xl md:text-6xl font-black font-mono tracking-tight text-gray-800 my-2">
             {{ formatTimer(timerSeconds) }}
           </div>
-          <p class="text-xs text-gray-400 font-semibold mt-2">
+          <p class="text-[10px] sm:text-xs text-gray-400 font-semibold mt-2 text-center">
             {{ timerRunning ? '小狗在身边默默陪着你哦 🐶' : '准备好就开始吧' }}
           </p>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 w-full">
-          <button v-if="!timerRunning" @click="startTimer" class="col-span-2 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-purple-200 hover:from-purple-700 hover:to-indigo-700 transition flex items-center justify-center gap-2 active:scale-95">
-            <i data-lucide="play" class="w-5 h-5 fill-white"></i> 开始专注
+        <div class="grid grid-cols-3 gap-2 sm:gap-3 w-full">
+          <button v-if="!timerRunning" @click="startTimer" class="col-span-2 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-lg shadow-purple-200 hover:from-purple-700 hover:to-indigo-700 transition flex items-center justify-center gap-2 active:scale-95">
+            <i data-lucide="play" class="w-4 h-4 sm:w-5 sm:h-5 fill-white"></i> 开始专注
           </button>
-          <button v-else @click="pauseTimer" class="col-span-2 py-4 bg-amber-500 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-amber-200 hover:bg-amber-600 transition flex items-center justify-center gap-2 active:scale-95">
-            <i data-lucide="pause" class="w-5 h-5 fill-white"></i> 暂停计时
+          <button v-else @click="pauseTimer" class="col-span-2 py-3 sm:py-4 bg-amber-500 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-lg shadow-amber-200 hover:bg-amber-600 transition flex items-center justify-center gap-2 active:scale-95">
+            <i data-lucide="pause" class="w-4 h-4 sm:w-5 sm:h-5 fill-white"></i> 暂停计时
           </button>
-          <button @click="stopAndSaveTimer" class="col-span-1 py-4 bg-gray-100 text-gray-700 font-extrabold text-sm rounded-2xl hover:bg-gray-200 transition flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-40" :disabled="timerSeconds === 0">
-            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i> 结算
+          <button @click="stopAndSaveTimer" class="col-span-1 py-3 sm:py-4 bg-gray-100 text-gray-700 font-extrabold text-xs sm:text-sm rounded-2xl hover:bg-gray-200 transition flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-40" :disabled="timerSeconds === 0">
+            <i data-lucide="check-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600"></i> <span class="hidden sm:inline">结算</span>
           </button>
         </div>
       </div>

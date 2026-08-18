@@ -574,7 +574,7 @@
 
           <!-- 隔天面膜 -->
           <div @click="checkInHabit('mask')" class="p-4 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm gap-3"
-               :class="maskStatus.completedToday ? 'bg-pink-50/80 border-pink-300' : (maskStatus.dueToday ? 'bg-pink-50/40 border-pink-200' : 'bg-white border-gray-100')">
+               :class="maskStatus.completedToday ? 'bg-pink-50/80 border-pink-300' : 'bg-white border-gray-100 hover:border-pink-200'">
             <div class="flex items-center gap-3.5 w-full sm:w-auto">
               <div class="w-9 h-9 rounded-xl flex items-center justify-center transition shrink-0"
                    :class="maskStatus.completedToday ? 'bg-beauty text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
@@ -582,15 +582,15 @@
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-xs font-black px-2 py-0.5 rounded-md bg-beauty-light text-beauty-dark whitespace-nowrap">美容 · 隔天</span>
-                  <h4 class="font-black text-base text-gray-800">隔天敷面膜</h4>
+                  <span class="text-xs font-black px-2 py-0.5 rounded-md bg-beauty-light text-beauty-dark whitespace-nowrap">美容 · 每日</span>
+                  <h4 class="font-black text-base text-gray-800">每日面膜打卡</h4>
                 </div>
-                <p class="text-xs mt-1 font-semibold" :class="maskStatus.dueToday && !maskStatus.completedToday ? 'text-pink-600' : 'text-gray-400'">
+                <p class="text-xs mt-1 font-semibold text-gray-400">
                   {{ maskStatus.desc }}
                 </p>
               </div>
             </div>
-            <span v-if="maskStatus.dueToday && !maskStatus.completedToday" class="text-xs px-2.5 py-1 rounded-xl bg-pink-500 text-white font-black animate-pulse shadow-sm ml-auto sm:ml-0">今日需敷</span>
+            <span v-if="!maskStatus.completedToday" class="text-xs px-2.5 py-1 rounded-xl bg-pink-500 text-white font-black animate-pulse shadow-sm ml-auto sm:ml-0">点击打卡</span>
           </div>
 
           <!-- 一周锻炼4天 -->
@@ -1596,17 +1596,17 @@
 
         const maskStatus = computed(() => {
           const lastDateStr = state.value.habits.intervals.mask.lastDate;
-          if (!lastDateStr) return { dueToday: true, completedToday: false, desc: '尚未记录，今天建议敷一张哦' };
-          const last = new Date(lastDateStr);
-          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+          const todayStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
 
-          if (diffDays === 0) {
-            return { dueToday: false, completedToday: true, desc: '今天已敷过面膜，肌肤水嫩嫩 💧' };
-          } else if (diffDays >= 2) {
-            return { dueToday: true, completedToday: false, desc: `距离上次已过 ${diffDays} 天，今天该敷啦！` };
+          if (lastDateStr === todayStr) {
+            return { dueToday: true, completedToday: true, desc: '今天已敷过面膜，肌肤水嫩嫩 💧' };
+          } else if (!lastDateStr) {
+            return { dueToday: true, completedToday: false, desc: '尚未记录，点击打卡哦' };
           } else {
-            return { dueToday: false, completedToday: false, desc: '昨天已敷，今天让皮肤好好呼吸休息~' };
+            const last = new Date(lastDateStr);
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+            return { dueToday: true, completedToday: false, desc: `距离上次已过 ${diffDays} 天` };
           }
         });
 

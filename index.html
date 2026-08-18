@@ -233,7 +233,7 @@
           </div>
         </div>
 
-        <!-- 2. 🎯 生活 SOP & 早中晚 TODO 板块 -->
+        <!-- 2. 🎯 SOP & To Do List 板块 -->
         <div @click="openView('sop')" class="p-6 rounded-3xl bg-white border-2 border-pink-100 hover:border-pink-300 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between gap-4 group active:scale-[0.98]">
           <div class="flex items-start justify-between">
             <div class="w-12 h-12 rounded-2xl bg-beauty-light text-beauty flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">
@@ -244,11 +244,11 @@
             </span>
           </div>
           <div>
-            <h3 class="font-black text-lg text-gray-800 group-hover:text-pink-600 transition">生活 SOP & 早中晚 TODO</h3>
+            <h3 class="font-black text-lg text-gray-800 group-hover:text-pink-600 transition">SOP & To Do List</h3>
             <p class="text-xs text-gray-400 mt-1 font-medium">早中晚事项规划、起止时间记录与周期打卡</p>
           </div>
           <div class="flex items-center text-xs font-bold text-pink-600 gap-1 pt-2 border-t border-gray-100">
-            <span>查看 SOP & TODO</span>
+            <span>查看 SOP & To Do List</span>
             <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
           </div>
         </div>
@@ -400,20 +400,20 @@
       </div>
     </main>
 
-    <!-- ================= 独立板块 2: 🎯 生活 SOP & 早中晚 TODO 清单页面 (SOP View) ================= -->
+    <!-- ================= 独立板块 2: 🎯 SOP & To Do List 页面 (SOP View) ================= -->
     <main v-if="currentView === 'sop'" class="max-w-4xl mx-auto w-full flex flex-col gap-6 animate-fade-in">
 
-      <!-- 1. 早中晚自主设计 TODO LIST (分早中晚+五维度色彩+起止时间记录) -->
+      <!-- 1. TO DO LIST (分早中晚+五维度色彩+起止时间记录) -->
       <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col gap-5">
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-xl font-black text-gray-800 flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-indigo-500"></span> 早中晚 自主设计 TO DO LIST
+              <span class="w-3 h-3 rounded-full bg-indigo-500"></span> TO DO LIST
             </h2>
             <p class="text-xs text-gray-400 mt-0.5">完成时输入起止时间，自动同步沉淀到 24 小时活动时间轴</p>
           </div>
           <button @click="showAddTodoModal = true" class="px-4 py-2 bg-indigo-600 text-white font-black text-xs rounded-2xl hover:bg-indigo-700 active:scale-95 shadow-md shadow-indigo-200 flex items-center gap-1">
-            + 添加 TODO
+            + 添加 TO DO
           </button>
         </div>
 
@@ -501,15 +501,15 @@
         </div>
       </div>
 
-      <!-- 2. 原有周期 SOP 清单 (背词/面膜/锻炼/周项/长周期) -->
+      <!-- 2. 周期习惯清单 (背词/面膜/锻炼/周项/长周期) -->
       <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col gap-5">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xl font-black text-gray-800">原有周期习惯 SOP</h2>
+            <h2 class="text-xl font-black text-gray-800">周期习惯</h2>
             <p class="text-xs text-gray-400 mt-0.5">长期固定好习惯打卡追踪</p>
           </div>
           <button @click="showAddSopModal = true" class="px-4 py-2 bg-purple-600 text-white font-black text-xs rounded-2xl hover:bg-purple-700 active:scale-95 shadow-md shadow-purple-200 flex items-center gap-1">
-            + 新增周期 SOP
+            + 新增周期习惯
           </button>
         </div>
 
@@ -1022,7 +1022,7 @@
         const currentViewTitle = computed(() => {
           switch(currentView.value) {
             case 'focus': return '⏱️ 学习专注';
-            case 'sop': return '🎯 生活 SOP & TODO';
+            case 'sop': return '🎯 SOP & To Do List';
             case 'fridge': return '🧊 冰箱存货';
             case 'milestones': return '📝 大事档案';
             case 'calendar': return '📅 日历与生日';

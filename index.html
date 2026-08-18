@@ -333,6 +333,26 @@
           </div>
         </div>
 
+        <!-- 7. 🛒 购物记录与返现追踪板块 -->
+        <div @click="openView('shopping')" class="p-6 rounded-3xl bg-white border-2 border-orange-100 hover:border-orange-300 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between gap-4 group active:scale-[0.98]">
+          <div class="flex items-start justify-between">
+            <div class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">
+              <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+            </div>
+            <span class="text-xs font-black px-2.5 py-1 rounded-xl bg-orange-100 text-orange-700">
+              {{ shoppingList.length }} 笔订单
+            </span>
+          </div>
+          <div>
+            <h3 class="font-black text-lg text-gray-800 group-hover:text-orange-600 transition">购物记录管理</h3>
+            <p class="text-xs text-gray-400 mt-1 font-medium">多平台购物记录、到货追踪、好评返现提醒</p>
+          </div>
+          <div class="flex items-center text-xs font-bold text-orange-600 gap-1 pt-2 border-t border-gray-100">
+            <span>查看购物清单</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+
       </div>
 
       <!-- 📊 24小时多维活动时间轴条形图 (类似手机屏幕使用时间分时柱状图) -->
@@ -824,6 +844,83 @@
       </div>
     </main>
 
+    <!-- ================= 独立板块 7: 🛒 购物记录与返现追踪页面 (Shopping View) ================= -->
+    <main v-if="currentView === 'shopping'" class="max-w-5xl mx-auto w-full flex flex-col gap-6 animate-fade-in">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col gap-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-black text-gray-800 flex items-center gap-2">
+              <i data-lucide="shopping-bag" class="w-6 h-6 text-orange-500"></i> 购物记录管理
+            </h2>
+            <p class="text-xs text-gray-400 mt-0.5">多平台购物记录、到货状态、好评返现提醒</p>
+          </div>
+          <button @click="showAddShoppingModal = true" class="px-4 py-2 bg-orange-500 text-white font-black text-xs rounded-2xl hover:bg-orange-600 active:scale-95 shadow-md shadow-orange-200">
+            + 添加购物记录
+          </button>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="p-3 rounded-2xl bg-orange-50 border border-orange-100">
+            <div class="text-xs text-orange-600 font-bold mb-1">总订单数</div>
+            <div class="text-2xl font-black text-orange-700">{{ shoppingList.length }}</div>
+          </div>
+          <div class="p-3 rounded-2xl bg-blue-50 border border-blue-100">
+            <div class="text-xs text-blue-600 font-bold mb-1">待收货</div>
+            <div class="text-2xl font-black text-blue-700">{{ shoppingList.filter(x => !x.arrived).length }}</div>
+          </div>
+          <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-100">
+            <div class="text-xs text-emerald-600 font-bold mb-1">已到货</div>
+            <div class="text-2xl font-black text-emerald-700">{{ shoppingList.filter(x => x.arrived).length }}</div>
+          </div>
+          <div class="p-3 rounded-2xl bg-pink-50 border border-pink-100">
+            <div class="text-xs text-pink-600 font-bold mb-1">待返现</div>
+            <div class="text-2xl font-black text-pink-700">{{ shoppingList.filter(x => x.arrived && !x.cashbackDone).length }}</div>
+          </div>
+        </div>
+
+        <!-- 购物清单 -->
+        <div class="flex flex-col gap-3">
+          <div v-if="shoppingList.length === 0" class="text-center py-12 text-xs text-gray-400">
+            暂无购物记录，点击右上角添加吧 🛍️
+          </div>
+          <div v-for="item in shoppingList" :key="item.id" class="p-4 rounded-2xl border-2 transition-all flex flex-col gap-3 shadow-sm group"
+               :class="item.arrived ? 'bg-emerald-50/30 border-emerald-100' : 'bg-orange-50/30 border-orange-100'">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-black px-2.5 py-1 rounded-lg" :class="getPlatformBadgeClass(item.platform)">
+                    {{ item.platform }}
+                  </span>
+                  <span v-if="item.arrived" class="text-xs font-black px-2 py-0.5 rounded-md bg-emerald-500 text-white">✓ 已到货</span>
+                  <span v-else class="text-xs font-black px-2 py-0.5 rounded-md bg-orange-500 text-white">⏳ 待收货</span>
+                </div>
+                <h4 class="font-black text-base text-gray-800 mb-1 leading-snug">{{ item.productName }}</h4>
+                <div class="flex items-center gap-3 text-xs text-gray-500">
+                  <span class="font-bold">数量: <span class="text-gray-800">{{ item.quantity }}</span></span>
+                  <span v-if="item.arrived && item.cashbackDone" class="font-bold text-pink-600 bg-pink-100 px-2 py-0.5 rounded">💰 已返现</span>
+                  <span v-else-if="item.arrived && !item.cashbackDone" class="font-bold text-pink-500 animate-pulse">💰 待好评返现</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <button @click="toggleArrived(item)" class="px-3 py-1.5 rounded-xl text-xs font-bold transition active:scale-95"
+                        :class="item.arrived ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-orange-500 text-white hover:bg-orange-600'">
+                  {{ item.arrived ? '标记未到' : '确认到货' }}
+                </button>
+                <button v-if="item.arrived" @click="toggleCashback(item)" class="px-3 py-1.5 rounded-xl text-xs font-bold transition active:scale-95"
+                        :class="item.cashbackDone ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-pink-500 text-white hover:bg-pink-600'">
+                  {{ item.cashbackDone ? '取消返现' : '完成返现' }}
+                </button>
+                <button @click="deleteShoppingItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
     <!-- ================= 🐶 页面右下角悬浮互动桌面宠物 ================= -->
     <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end pointer-events-none select-none">
       <div v-if="petDialogue" class="mb-2 px-3.5 py-2 rounded-2xl bg-white/95 backdrop-blur shadow-lg border border-purple-100 text-xs font-bold text-gray-800 flex items-center gap-1.5 animate-bounce pointer-events-auto">
@@ -1006,6 +1103,41 @@
       </div>
     </div>
 
+    <!-- Modal: 新增购物记录 -->
+    <div v-if="showAddShoppingModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col gap-4">
+        <h3 class="font-black text-gray-800 text-base">添加购物记录</h3>
+        <div class="flex flex-col gap-3 text-xs">
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">购物平台</label>
+            <select v-model="newShoppingForm.platform" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 font-bold">
+              <option value="淘宝">🛒 淘宝</option>
+              <option value="拼多多">🍊 拼多多</option>
+              <option value="抖音">🎵 抖音</option>
+              <option value="微信">💬 微信</option>
+              <option value="京东">📦 京东</option>
+              <option value="小红书">📕 小红书</option>
+              <option value="闲鱼">🐟 闲鱼</option>
+              <option value="1688">🏭 1688</option>
+              <option value="唯品会">👗 唯品会</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">商品名称</label>
+            <input v-model="newShoppingForm.productName" type="text" placeholder="例如: iPhone 15 Pro Max" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-600 mb-1">购买数量</label>
+            <input v-model="newShoppingForm.quantity" type="text" placeholder="例如: 1件 / 2盒" class="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50">
+          </div>
+        </div>
+        <div class="flex gap-2 justify-end mt-2">
+          <button @click="showAddShoppingModal = false" class="px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-xl">取消</button>
+          <button @click="saveNewShopping" class="px-4 py-2 text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 rounded-xl">添加记录</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Vue 3 Application Script -->
@@ -1027,6 +1159,7 @@
             case 'milestones': return '📝 大事档案';
             case 'calendar': return '📅 日历与生日';
             case 'memos': return '📌 备忘便签';
+            case 'shopping': return '🛒 购物记录';
             default: return '';
           }
         });
@@ -1087,7 +1220,8 @@
           ],
           weeklyMemos: [
             { id: 1, title: '周三提醒', content: '去菜鸟驿站拿生鲜包裹', bgColor: '#FEF3C7', borderColor: '#FDE68A' }
-          ]
+          ],
+          shoppingList: []
         });
 
         const loadSavedData = () => {
@@ -1731,6 +1865,63 @@
           state.value.weeklyMemos = state.value.weeklyMemos.filter(m => m.id !== id);
         };
 
+        // 🛒 购物记录管理
+        const shoppingList = computed(() => state.value.shoppingList || []);
+        const showAddShoppingModal = ref(false);
+        const newShoppingForm = ref({ platform: '淘宝', productName: '', quantity: '1件' });
+
+        const saveNewShopping = () => {
+          if (!newShoppingForm.value.productName.trim()) return;
+          if (!state.value.shoppingList) state.value.shoppingList = [];
+          state.value.shoppingList.unshift({
+            id: Date.now(),
+            platform: newShoppingForm.value.platform,
+            productName: newShoppingForm.value.productName.trim(),
+            quantity: newShoppingForm.value.quantity.trim(),
+            arrived: false,
+            cashbackDone: false
+          });
+          newShoppingForm.value = { platform: '淘宝', productName: '', quantity: '1件' };
+          showAddShoppingModal.value = false;
+          try { confetti({ particleCount: 40, spread: 45, origin: { y: 0.6 } }); } catch(e){}
+        };
+
+        const toggleArrived = (item) => {
+          item.arrived = !item.arrived;
+          if (!item.arrived) {
+            item.cashbackDone = false;
+          }
+          if (item.arrived) {
+            try { confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } }); } catch(e){}
+          }
+        };
+
+        const toggleCashback = (item) => {
+          item.cashbackDone = !item.cashbackDone;
+          if (item.cashbackDone) {
+            try { confetti({ particleCount: 60, spread: 55, origin: { y: 0.6 } }); } catch(e){}
+          }
+        };
+
+        const deleteShoppingItem = (id) => {
+          state.value.shoppingList = state.value.shoppingList.filter(x => x.id !== id);
+        };
+
+        const getPlatformBadgeClass = (platform) => {
+          const map = {
+            '淘宝': 'bg-orange-100 text-orange-700',
+            '拼多多': 'bg-red-100 text-red-700',
+            '抖音': 'bg-gray-900 text-white',
+            '微信': 'bg-green-100 text-green-700',
+            '京东': 'bg-red-100 text-red-700',
+            '小红书': 'bg-rose-100 text-rose-700',
+            '闲鱼': 'bg-blue-100 text-blue-700',
+            '1688': 'bg-orange-100 text-orange-700',
+            '唯品会': 'bg-pink-100 text-pink-700'
+          };
+          return map[platform] || 'bg-gray-100 text-gray-700';
+        };
+
         // 数据备份恢复
         const exportData = () => {
           const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.value, null, 2));
@@ -1859,6 +2050,14 @@
           editMemo,
           saveMemo,
           deleteMemo,
+          shoppingList,
+          showAddShoppingModal,
+          newShoppingForm,
+          saveNewShopping,
+          toggleArrived,
+          toggleCashback,
+          deleteShoppingItem,
+          getPlatformBadgeClass,
           exportData,
           importData
         };

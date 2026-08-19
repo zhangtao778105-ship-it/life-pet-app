@@ -687,25 +687,25 @@
             <div class="p-3.5 rounded-2xl bg-gray-50/90 border border-gray-100">
               <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">中长期智能周期追踪</span>
             </div>
-            <div v-for="item in intervalSopList" :key="item.id" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between select-none shadow-sm group"
+            <div v-for="item in intervalSopList" :key="item.id" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm group gap-3"
                  :class="isIntervalDue(item) ? 'bg-orange-50/60 border-orange-200' : 'bg-white border-gray-100'">
-              <div class="flex items-center gap-3.5 flex-1 min-w-0">
+              <div class="flex items-center gap-3.5 flex-1 min-w-0 w-full sm:w-auto">
                 <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-gray-100 border border-gray-200 text-gray-400 shrink-0">
                   <i data-lucide="clock" class="w-5 h-5"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                  <h4 class="font-black text-base text-gray-800 truncate">{{ item.title }}</h4>
-                  <p class="text-xs mt-1 font-semibold text-gray-500">{{ getIntervalDesc(item) }}</p>
+                  <h4 class="font-black text-base text-gray-800 break-words">{{ item.title }}</h4>
+                  <p class="text-xs mt-1 font-semibold text-gray-500 break-words">{{ getIntervalDesc(item) }}</p>
                 </div>
               </div>
-              <div class="flex items-center gap-1 shrink-0">
+              <div class="flex items-center gap-1 shrink-0 ml-auto sm:ml-0">
                 <button @click="checkInIntervalItem(item.id)" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-sm active:scale-95 transition">
                   刚完成
                 </button>
-                <button @click.stop="editIntervalSopItem(item)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-purple-600 transition p-2">
+                <button @click.stop="editIntervalSopItem(item)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-purple-600 transition rounded-xl hover:bg-purple-50 active:scale-95">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
                 </button>
-                <button @click.stop="confirmDeleteAction(() => deleteIntervalSopItem(item.id), `确定要删除「${item.title}」吗？上次打卡记录将清空。`)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-2">
+                <button @click.stop="confirmDeleteAction(() => deleteIntervalSopItem(item.id), `确定要删除「${item.title}」吗？上次打卡记录将清空。`)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 transition rounded-xl hover:bg-red-50 active:scale-95">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
               </div>
@@ -1015,25 +1015,23 @@
           <div v-if="journalList.length === 0" class="text-center py-12 text-xs text-gray-400">
             还没有记录任何感悟，点击右上角开始书写吧 ✨
           </div>
-          <div v-for="entry in journalList" :key="entry.id" class="p-5 rounded-3xl border-2 border-indigo-100 bg-indigo-50/30 flex flex-col gap-3 shadow-sm hover:shadow-md transition group">
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex-1">
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="text-lg">{{ entry.mood }}</span>
-                  <span class="text-xs font-black px-2.5 py-1 rounded-lg bg-indigo-500 text-white">{{ entry.moodLabel }}</span>
-                  <span class="text-xs text-gray-400 font-mono">{{ entry.date }} {{ entry.time }}</span>
-                </div>
-                <h4 v-if="entry.title" class="font-black text-base text-gray-800 mb-2">{{ entry.title }}</h4>
-                <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{{ entry.content }}</p>
+          <div v-for="entry in journalList" :key="entry.id" class="p-5 rounded-3xl border-2 border-indigo-100 bg-indigo-50/30 flex flex-col sm:flex-row items-start gap-3 shadow-sm hover:shadow-md transition group">
+            <div class="flex-1 w-full sm:w-auto min-w-0">
+              <div class="flex items-center gap-2 mb-2 flex-wrap">
+                <span class="text-lg shrink-0">{{ entry.mood }}</span>
+                <span class="text-xs font-black px-2.5 py-1 rounded-lg bg-indigo-500 text-white shrink-0">{{ entry.moodLabel }}</span>
+                <span class="text-xs text-gray-400 font-mono">{{ entry.date }} {{ entry.time }}</span>
               </div>
-              <div class="flex items-center gap-1 shrink-0">
-                <button @click="editJournal(entry)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-indigo-600 transition p-2">
-                  <i data-lucide="edit-3" class="w-4 h-4"></i>
-                </button>
-                <button @click="confirmDeleteAction(() => deleteJournal(entry.id), `确定要删除随笔「${entry.title || entry.content.substring(0, 20)}...」吗？`)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-2">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-              </div>
+              <h4 v-if="entry.title" class="font-black text-base text-gray-800 mb-2 break-words">{{ entry.title }}</h4>
+              <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line break-words">{{ entry.content }}</p>
+            </div>
+            <div class="flex sm:flex-col items-center gap-1 shrink-0 ml-auto sm:ml-0">
+              <button @click="editJournal(entry)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-indigo-600 transition rounded-xl hover:bg-indigo-50 active:scale-95">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+              </button>
+              <button @click="confirmDeleteAction(() => deleteJournal(entry.id), `确定要删除随笔「${entry.title || entry.content.substring(0, 20)}...」吗？`)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 transition rounded-xl hover:bg-red-50 active:scale-95">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -1519,10 +1517,75 @@
           return userStatus.value.name + ' ' + userStatus.value.icon;
         });
 
+        // 每日金句语料库（50条励志语句）
+        const dailyQuotes = [
+          '早中晚 TODO 和周期 SOP 已经准备好啦，今天也一起闪闪发光吧！',
+          '每一个小目标的完成，都是通往梦想的阶梯 ✨',
+          '今天的努力，是明天更好的自己 💪',
+          '保持专注，保持热爱，保持前行的姿态',
+          '你的坚持，终将美好 🌸',
+          '微小的进步，日积月累就是飞跃',
+          '今天也要元气满满地冲鸭！',
+          '相信自己，你比想象中更强大 🌟',
+          '每一天都是新的开始，加油哦！',
+          '慢慢来，比较快。一步一个脚印最踏实',
+          '今天的你，已经很棒了！继续保持 ✨',
+          '把每一件小事做好，就是不平凡',
+          '生活明朗，万物可爱，你也是 💕',
+          '今天要做更好的自己呀~',
+          '保持热爱，奔赴山海 🌊',
+          '你的努力，时间看得见 ⏰',
+          '今天也要开心鸭，一切都会好起来的',
+          '每一个认真生活的日子，都值得被记录',
+          '慢慢变好，是给自己最好的礼物 🎁',
+          '你已经很棒啦！今天继续加油 💪',
+          '保持自律，保持清醒，保持前行',
+          '今日事今日毕，明天的你会感谢今天的努力',
+          '小小的坚持，会带来大大的改变',
+          '你在为梦想努力的样子，真的很美 ✨',
+          '每天进步一点点，就是在靠近目标',
+          '今天也要认真生活，好好爱自己哦 💕',
+          '别着急，最好的总会在不经意间出现',
+          '你的自律里，藏着你的运气',
+          '今天的小确幸，从完成待办开始 ✅',
+          '保持热情，保持好奇，保持成长',
+          '每一次努力，都不会被辜负 🌟',
+          '你的时间很宝贵，用来做有意义的事吧',
+          '今天也要做快乐的事，见喜欢的人',
+          '相信过程，享受当下，期待未来',
+          '你的每一份努力，都在为更好的明天铺路',
+          '保持专注，屏蔽杂音，做自己就好',
+          '今天也要活得认真且有趣呀 ✨',
+          '慢慢来，一切都来得及',
+          '你比昨天的自己更棒了！',
+          '坚持下去，好事正在发生 🍀',
+          '每一个平凡的日子，都值得被好好对待',
+          '今天的目标清单已备好，一起冲冲冲！',
+          '你的努力，会成为你的底气',
+          '保持热爱，生活处处是惊喜',
+          '今天也要做最好的自己哦 💪',
+          '小狗陪你一起努力，我们都会越来越好',
+          '你的认真，终将闪闪发光 ✨',
+          '今天也是充满可能性的一天',
+          '保持自律的样子，真的很酷',
+          '你的坚持，值得所有美好'
+        ];
+
+        // 根据日期生成固定的随机索引（每天同一句）
+        const getDailyQuoteIndex = () => {
+          const todayStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
+          let hash = 0;
+          for (let i = 0; i < todayStr.length; i++) {
+            hash = ((hash << 5) - hash) + todayStr.charCodeAt(i);
+            hash = hash & hash;
+          }
+          return Math.abs(hash) % dailyQuotes.length;
+        };
+
         const petQuote = computed(() => {
           if (state.value.todayStudySeconds >= 7200) return '今天超厉害！专注学习突破了 2 小时，给你大大的拥抱！';
           if (timerRunning.value) return '嘘——正在专心学习中，小狗会一直安静陪着你哦~';
-          return '早中晚 TODO 和周期 SOP 已经准备好啦，今天也一起闪闪发光吧！';
+          return dailyQuotes[getDailyQuoteIndex()];
         });
 
         // 📋 早中晚 TODO 逻辑与时间关联

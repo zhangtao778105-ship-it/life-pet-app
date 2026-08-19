@@ -468,7 +468,7 @@
                       <span class="text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 inline-block" :class="getDimensionBadgeClass(todo.dimension)">{{ todo.dimension }}</span>
                     </div>
                   </div>
-                  <button @click="deleteTodo(todo.id)" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                  <button @click="confirmDeleteAction(() => deleteTodo(todo.id), `确定要删除待办事项「${todo.text}」吗？`)" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                 </div>
                 <div v-if="todo.startTime && todo.endTime" class="text-[10px] text-gray-400 font-mono pl-7">
                   ⏰ {{ todo.startTime }} - {{ todo.endTime }}
@@ -494,7 +494,7 @@
                       <span class="text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 inline-block" :class="getDimensionBadgeClass(todo.dimension)">{{ todo.dimension }}</span>
                     </div>
                   </div>
-                  <button @click="deleteTodo(todo.id)" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                  <button @click="confirmDeleteAction(() => deleteTodo(todo.id), `确定要删除待办事项「${todo.text}」吗？`)" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                 </div>
                 <div v-if="todo.startTime && todo.endTime" class="text-[10px] text-gray-400 font-mono pl-7">
                   ⏰ {{ todo.startTime }} - {{ todo.endTime }}
@@ -520,7 +520,7 @@
                       <span class="text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 inline-block" :class="getDimensionBadgeClass(todo.dimension)">{{ todo.dimension }}</span>
                     </div>
                   </div>
-                  <button @click="deleteTodo(todo.id)" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                  <button @click="confirmDeleteAction(() => deleteTodo(todo.id), `确定要删除待办事项「${todo.text}」吗？`)" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                 </div>
                 <div v-if="todo.startTime && todo.endTime" class="text-[10px] text-gray-400 font-mono pl-7">
                   ⏰ {{ todo.startTime }} - {{ todo.endTime }}
@@ -594,9 +594,9 @@
           </div>
 
           <!-- 一周锻炼4天 -->
-          <div @click="toggleWorkoutToday" class="p-4 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm gap-3"
+          <div @click="toggleWorkoutToday" class="p-4 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm gap-3 group"
                :class="habits.workout.doneToday ? 'bg-green-50/80 border-green-300' : 'bg-white border-gray-100'">
-            <div class="flex items-center gap-3.5 w-full sm:w-auto">
+            <div class="flex items-center gap-3.5 w-full sm:w-auto min-w-0">
               <div class="w-9 h-9 rounded-xl flex items-center justify-center transition shrink-0"
                    :class="habits.workout.doneToday ? 'bg-health text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
                 <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
@@ -613,7 +613,14 @@
                 </div>
               </div>
             </div>
-            <span class="text-xs font-bold text-gray-400 ml-auto sm:ml-0">{{ habits.workout.doneToday ? '今日已打卡' : '点击打卡' }}</span>
+            <div class="flex items-center gap-1 shrink-0 ml-auto sm:ml-0">
+              <button @click.stop="editWorkoutHabit" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-purple-600 transition rounded-xl hover:bg-purple-50 active:scale-95">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+              </button>
+              <button @click.stop="confirmDeleteAction(() => deleteWorkoutHabit(), '确定要删除「一周锻炼 4 天」吗？删除后本周打卡记录将清空。')" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 transition rounded-xl hover:bg-red-50 active:scale-95">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
           </div>
 
           <!-- 每周 SOP 集合 -->
@@ -637,7 +644,7 @@
                 <button @click.stop="editWeeklySopItem(item)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-purple-600 transition rounded-xl hover:bg-purple-50 active:scale-95">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
                 </button>
-                <button @click.stop="deleteWeeklySopItem(item.id)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 transition rounded-xl hover:bg-red-50 active:scale-95">
+                <button @click.stop="confirmDeleteAction(() => deleteWeeklySopItem(item.id), `确定要删除「${item.title}」吗？`)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 transition rounded-xl hover:bg-red-50 active:scale-95">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
               </div>
@@ -668,7 +675,7 @@
                 <button @click.stop="editWeeklyCountItem(item)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-purple-600 transition rounded-xl hover:bg-purple-50 active:scale-95">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
                 </button>
-                <button @click.stop="deleteWeeklyCountItem(item.id)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 transition rounded-xl hover:bg-red-50 active:scale-95">
+                <button @click.stop="confirmDeleteAction(() => deleteWeeklyCountItem(item.id), `确定要删除「${item.title}」吗？本周打卡记录将清空。`)" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 transition rounded-xl hover:bg-red-50 active:scale-95">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
               </div>
@@ -698,7 +705,7 @@
                 <button @click.stop="editIntervalSopItem(item)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-purple-600 transition p-2">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
                 </button>
-                <button @click.stop="deleteIntervalSopItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-2">
+                <button @click.stop="confirmDeleteAction(() => deleteIntervalSopItem(item.id), `确定要删除「${item.title}」吗？上次打卡记录将清空。`)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-2">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
               </div>
@@ -752,7 +759,7 @@
                 </span>
                 <h4 class="font-black text-base text-gray-800 mt-1.5">{{ item.name }}</h4>
               </div>
-              <button @click="deleteFoodItem(item.id)" class="text-gray-300 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              <button @click="confirmDeleteAction(() => deleteFoodItem(item.id), `确定要删除「${item.name}」吗？`)" class="text-gray-300 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div>
             <div class="flex items-center justify-between text-xs pt-2 border-t border-gray-200/50">
               <span class="font-bold text-gray-600 bg-white px-2 py-0.5 rounded-lg border border-gray-200/60">余量: {{ item.quantity || '充足' }}</span>
@@ -811,7 +818,7 @@
                 <span class="text-[11px] text-gray-400 font-mono mt-1 block">{{ item.date ? `${item.date} ` : '' }}{{ item.time }}</span>
               </div>
             </div>
-            <button @click="deleteMilestone(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            <button @click="confirmDeleteAction(() => deleteMilestone(item.id), `确定要删除大事记录「${item.text}」吗？`)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </div>
         </div>
       </div>
@@ -856,8 +863,8 @@
           <div class="lg:col-span-5 flex flex-col gap-3">
             <h3 class="font-black text-sm text-gray-700">重要日子倒数清单</h3>
             <div class="flex flex-col gap-2.5 max-h-80 overflow-y-auto pr-1">
-              <div v-if="specialEvents.length === 0" class="text-center py-6 text-xs text-gray-400">暂无重要日子</div>
-              <div v-for="evt in specialEvents" :key="evt.id" class="p-3.5 rounded-2xl border border-gray-100 bg-rose-50/50 flex items-center justify-between text-xs group">
+              <div v-if="sortedSpecialEvents.length === 0" class="text-center py-6 text-xs text-gray-400">暂无重要日子</div>
+              <div v-for="evt in sortedSpecialEvents" :key="evt.id" class="p-3.5 rounded-2xl border border-gray-100 bg-rose-50/50 flex items-center justify-between text-xs group">
                 <div class="flex items-center gap-3 min-w-0">
                   <span class="text-lg shrink-0">{{ evt.icon || '🎂' }}</span>
                   <div class="min-w-0 truncate">
@@ -866,10 +873,10 @@
                   </div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
-                  <span class="text-xs font-black text-rose-500">
-                    {{ getDaysUntil(evt.date) === 0 ? '🎉 就是今天!' : `还有 ${getDaysUntil(evt.date)} 天` }}
+                  <span class="text-xs font-black" :class="getDaysUntil(evt.date) < 0 ? 'text-gray-400' : 'text-rose-500'">
+                    {{ getDaysUntil(evt.date) === 0 ? '🎉 就是今天!' : (getDaysUntil(evt.date) < 0 ? `已过 ${Math.abs(getDaysUntil(evt.date))} 天` : `还有 ${getDaysUntil(evt.date)} 天`) }}
                   </span>
-                  <button @click="deleteSpecialEvent(evt.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                  <button @click="confirmDeleteAction(() => deleteSpecialEvent(evt.id), `确定要删除纪念日「${evt.name}」吗？`)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 </div>
               </div>
             </div>
@@ -901,7 +908,7 @@
                 <span class="font-black text-sm text-gray-800">{{ memo.title }}</span>
                 <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition">
                   <button @click="editMemo(memo)" class="p-1 hover:text-purple-700 text-gray-500" title="编辑"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-                  <button @click="deleteMemo(memo.id)" class="p-1 hover:text-red-600 text-gray-500" title="删除"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                  <button @click="confirmDeleteAction(() => deleteMemo(memo.id), `确定要删除便签「${memo.title}」吗？`)" class="p-1 hover:text-red-600 text-gray-500" title="删除"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                 </div>
               </div>
               <p class="text-gray-700 text-xs leading-relaxed whitespace-pre-line font-medium">{{ memo.content }}</p>
@@ -978,7 +985,7 @@
                         :class="item.cashbackDone ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-pink-500 text-white hover:bg-pink-600'">
                   {{ item.cashbackDone ? '取消返现' : '完成返现' }}
                 </button>
-                <button @click="deleteShoppingItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1">
+                <button @click="confirmDeleteAction(() => deleteShoppingItem(item.id), `确定要删除购物记录「${item.productName}」吗？`)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
               </div>
@@ -1023,7 +1030,7 @@
                 <button @click="editJournal(entry)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-indigo-600 transition p-2">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
                 </button>
-                <button @click="deleteJournal(entry.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-2">
+                <button @click="confirmDeleteAction(() => deleteJournal(entry.id), `确定要删除随笔「${entry.title || entry.content.substring(0, 20)}...」吗？`)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-2">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
               </div>
@@ -1282,6 +1289,25 @@
         <div class="flex gap-2 justify-end mt-2">
           <button @click="closeJournalModal" class="px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-xl">取消</button>
           <button @click="saveJournal" class="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl">{{ editingJournalId ? '保存修改' : '保存随笔' }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: 删除确认对话框 -->
+    <div v-if="deleteConfirm.show" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col gap-4">
+        <div class="flex items-start gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center shrink-0">
+            <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-black text-gray-800 text-base">确认删除</h3>
+            <p class="text-sm text-gray-600 mt-1">{{ deleteConfirm.message }}</p>
+          </div>
+        </div>
+        <div class="flex gap-2 justify-end mt-2">
+          <button @click="cancelDelete" class="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition">取消</button>
+          <button @click="confirmDelete" class="px-4 py-2 text-xs font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl transition shadow-md">确认删除</button>
         </div>
       </div>
     </div>
@@ -2049,12 +2075,27 @@
           let m = parseInt(parts[parts.length - 2], 10) - 1;
           let d = parseInt(parts[parts.length - 1], 10);
           let target = new Date(now.getFullYear(), m, d);
-          if (target < new Date(now.getFullYear(), now.getMonth(), now.getDate())) {
-            target = new Date(now.getFullYear() + 1, m, d);
-          }
           const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+          // 如果今年的日期已过，计算明年的日期
+          if (target < today) {
+            const nextYearTarget = new Date(now.getFullYear() + 1, m, d);
+            const daysToNextYear = Math.ceil((nextYearTarget - today) / (1000 * 60 * 60 * 24));
+            return daysToNextYear;
+          }
+
           return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
         };
+
+        // 按临近程度排序的重要日子列表
+        const sortedSpecialEvents = computed(() => {
+          if (!specialEvents.value.length) return [];
+          return [...specialEvents.value].sort((a, b) => {
+            const daysA = getDaysUntil(a.date);
+            const daysB = getDaysUntil(b.date);
+            return daysA - daysB;
+          });
+        });
 
         const nearestEventText = computed(() => {
           if (!specialEvents.value.length) return '暂无纪念日';
@@ -2244,6 +2285,50 @@
           state.value.journalList = state.value.journalList.filter(x => x.id !== id);
         };
 
+        // 删除确认对话框
+        const deleteConfirm = ref({
+          show: false,
+          message: '',
+          callback: null
+        });
+
+        const confirmDeleteAction = (callback, message) => {
+          deleteConfirm.value.show = true;
+          deleteConfirm.value.message = message;
+          deleteConfirm.value.callback = callback;
+        };
+
+        const confirmDelete = () => {
+          if (deleteConfirm.value.callback) {
+            deleteConfirm.value.callback();
+          }
+          cancelDelete();
+        };
+
+        const cancelDelete = () => {
+          deleteConfirm.value.show = false;
+          deleteConfirm.value.message = '';
+          deleteConfirm.value.callback = null;
+        };
+
+        // 每周锻炼编辑功能
+        const editWorkoutHabit = () => {
+          editingSopId.value = 'workout';
+          newSopForm.value = {
+            title: '一周锻炼 4 天',
+            category: '健康',
+            type: 'weekly-count',
+            weeklyCount: 4,
+            intervalDays: 14
+          };
+          showAddSopModal.value = true;
+        };
+
+        const deleteWorkoutHabit = () => {
+          // 重置每周锻炼数据
+          state.value.habits.workout = { weekCount: 0, doneToday: false, lastDate: null };
+        };
+
         // 数据备份恢复
         const exportData = () => {
           const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.value, null, 2));
@@ -2367,6 +2452,7 @@
           calendarDays,
           changeMonth,
           specialEvents,
+          sortedSpecialEvents,
           nearestEventText,
           showAddEventModal,
           newEvent,
@@ -2398,6 +2484,12 @@
           closeJournalModal,
           saveJournal,
           deleteJournal,
+          deleteConfirm,
+          confirmDeleteAction,
+          confirmDelete,
+          cancelDelete,
+          editWorkoutHabit,
+          deleteWorkoutHabit,
           exportData,
           importData
         };

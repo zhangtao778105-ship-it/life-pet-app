@@ -546,9 +546,9 @@
 
         <div class="flex flex-col gap-3.5">
           <!-- 背单词 -->
-          <div @click="toggleVocab" class="p-4 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm gap-3"
+          <div @click="toggleVocab" class="p-4 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm gap-3 group"
                :class="habits.vocab.doneToday ? 'bg-purple-50/80 border-purple-300' : 'bg-white border-gray-100 hover:border-purple-200'">
-            <div class="flex items-center gap-3.5 w-full sm:w-auto">
+            <div class="flex items-center gap-3.5 w-full sm:w-auto min-w-0">
               <div class="w-9 h-9 rounded-xl flex items-center justify-center transition shrink-0"
                    :class="habits.vocab.doneToday ? 'bg-study text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
                 <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
@@ -566,16 +566,22 @@
                 </div>
               </div>
             </div>
-            <div class="flex items-center gap-1.5 ml-auto sm:ml-0" @click.stop>
+            <div class="flex items-center gap-1 shrink-0 ml-auto sm:ml-0" @click.stop>
               <button @click="addVocab(-1)" class="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 font-black text-sm hover:bg-gray-100 flex items-center justify-center active:scale-95">-</button>
               <button @click="addVocab(1)" class="w-9 h-9 rounded-xl bg-study text-white font-black text-sm hover:bg-study-dark flex items-center justify-center shadow active:scale-95">+</button>
+              <button @click="editVocabHabit" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-purple-600 transition rounded-xl hover:bg-purple-50 active:scale-95">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+              </button>
+              <button @click="confirmDeleteAction(() => deleteVocabHabit(), '确定要删除「每天背 10 个单词」吗？今日打卡记录将清空。')" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 transition rounded-xl hover:bg-red-50 active:scale-95">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
             </div>
           </div>
 
           <!-- 隔天面膜 -->
-          <div @click="checkInHabit('mask')" class="p-4 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm gap-3"
+          <div @click="checkInHabit('mask')" class="p-4 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between select-none shadow-sm gap-3 group"
                :class="maskStatus.completedToday ? 'bg-pink-50/80 border-pink-300' : 'bg-white border-gray-100 hover:border-pink-200'">
-            <div class="flex items-center gap-3.5 w-full sm:w-auto">
+            <div class="flex items-center gap-3.5 w-full sm:w-auto min-w-0">
               <div class="w-9 h-9 rounded-xl flex items-center justify-center transition shrink-0"
                    :class="maskStatus.completedToday ? 'bg-beauty text-white shadow-md' : 'bg-gray-100 border border-gray-200 text-transparent'">
                 <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
@@ -590,7 +596,15 @@
                 </p>
               </div>
             </div>
-            <span v-if="!maskStatus.completedToday" class="text-xs px-2.5 py-1 rounded-xl bg-pink-500 text-white font-black animate-pulse shadow-sm ml-auto sm:ml-0">点击打卡</span>
+            <div class="flex items-center gap-1 shrink-0 ml-auto sm:ml-0" @click.stop>
+              <span v-if="!maskStatus.completedToday" class="text-xs px-2.5 py-1 rounded-xl bg-pink-500 text-white font-black animate-pulse shadow-sm">点击打卡</span>
+              <button @click="editMaskHabit" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-purple-600 transition rounded-xl hover:bg-purple-50 active:scale-95">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+              </button>
+              <button @click="confirmDeleteAction(() => deleteMaskHabit(), '确定要删除「每日面膜打卡」吗？打卡记录将清空。')" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 transition rounded-xl hover:bg-red-50 active:scale-95">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
           </div>
 
           <!-- 一周锻炼4天 -->
@@ -2392,6 +2406,42 @@
           state.value.habits.workout = { weekCount: 0, doneToday: false, lastDate: null };
         };
 
+        // 每日背单词编辑功能
+        const editVocabHabit = () => {
+          editingSopId.value = 'vocab';
+          newSopForm.value = {
+            title: '每天背 10 个单词',
+            category: '学习',
+            type: 'daily-vocab',
+            weeklyCount: 10,
+            intervalDays: 14
+          };
+          showAddSopModal.value = true;
+        };
+
+        const deleteVocabHabit = () => {
+          // 重置背单词数据
+          state.value.habits.vocab = { todayCount: 0, doneToday: false };
+        };
+
+        // 每日面膜编辑功能
+        const editMaskHabit = () => {
+          editingSopId.value = 'mask';
+          newSopForm.value = {
+            title: '每日面膜打卡',
+            category: '美容',
+            type: 'daily-mask',
+            weeklyCount: 1,
+            intervalDays: 1
+          };
+          showAddSopModal.value = true;
+        };
+
+        const deleteMaskHabit = () => {
+          // 重置面膜数据
+          state.value.habits.intervals.mask = { lastDate: null };
+        };
+
         // 数据备份恢复
         const exportData = () => {
           const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.value, null, 2));
@@ -2553,6 +2603,10 @@
           cancelDelete,
           editWorkoutHabit,
           deleteWorkoutHabit,
+          editVocabHabit,
+          deleteVocabHabit,
+          editMaskHabit,
+          deleteMaskHabit,
           exportData,
           importData
         };

@@ -1412,6 +1412,7 @@
         const getDefaultData = () => ({
           userStatus: { name: '元气满满', icon: '☀️' },
           todayStudySeconds: 0,
+          lastResetDate: null,
           habits: {
             vocab: { todayCount: 0, doneToday: false },
             workout: { weekCount: 0, doneToday: false, lastDate: null },
@@ -1464,6 +1465,60 @@
         };
 
         const state = ref(loadSavedData());
+
+        // 每日重置检查：如果日期变化，重置所有每日任务
+        const checkDailyReset = () => {
+          const today = new Date();
+          const todayStr = `${today.getFullYear()}-${(today.getMonth()+1).toString().padStart(2,'0')}-${today.getDate().toString().padStart(2,'0')}`;
+
+          if (state.value.lastResetDate !== todayStr) {
+            // 重置 TODO List 的 done 状态
+            if (state.value.todoList) {
+              state.value.todoList.forEach(todo => {
+                todo.done = false;
+                todo.startTime = '';
+                todo.endTime = '';
+              });
+            }
+
+            // 重置每日习惯
+            if (state.value.habits) {
+              if (state.value.habits.vocab) {
+                state.value.habits.vocab.doneToday = false;
+                state.value.habits.vocab.todayCount = 0;
+              }
+              if (state.value.habits.workout) {
+                state.value.habits.workout.doneToday = false;
+              }
+            }
+
+            // 重置每周习惯（每周一重置）
+            const dayOfWeek = today.getDay();
+            if (dayOfWeek === 1) { // 星期一
+              if (state.value.weeklySopList) {
+                state.value.weeklySopList.forEach(item => {
+                  item.done = false;
+                });
+              }
+              if (state.value.weeklyCountSopList) {
+                state.value.weeklyCountSopList.forEach(item => {
+                  item.weekCount = 0;
+                });
+              }
+              if (state.value.habits && state.value.habits.workout) {
+                state.value.habits.workout.weekCount = 0;
+              }
+            }
+
+            // 重置学习专注时长
+            state.value.todayStudySeconds = 0;
+
+            // 更新重置日期
+            state.value.lastResetDate = todayStr;
+          }
+        };
+
+        checkDailyReset();
 
         watch(state, (newVal) => {
           try {
